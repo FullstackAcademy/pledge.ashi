@@ -22,7 +22,7 @@ So in a Node-based project we could write things like this:
 
 var vow = require('vow');
 var myDefer1 = vow.defer();
-var myPledge1 = myDefer1.pledge;
+var myPromise1 = myDefer1.$promise;
 …
-var pledgeForResults = vow.all([pledge1, pledge2]);
+var promiseForResults = vow.all( [promise1, promise2] );
 --------------------------------------------------------*/
