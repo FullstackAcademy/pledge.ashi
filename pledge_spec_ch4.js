@@ -20,7 +20,8 @@ handler, they bubble out and are represented by the return
 promise B. This leads to amazingly versatile behavior:
 choosing when to catch errors, chaining promises together,
 easily passing around promised values and acting on them
-where convenient. This chapter may be challenging.
+where convenient… even returning new values.
+This chapter may be challenging.
 ========================================================*/
 
 describe('For a given promiseA (pA),', function(){
@@ -30,15 +31,15 @@ describe('For a given promiseA (pA),', function(){
     deferralA = defer();
     promiseA = deferralA.$promise;
   });
-  var thisReturnsHi = function () { return 'hi'; };
-  var thisThrowsErr = function () { throw 'err'; };
+  function thisReturnsHi () { return 'hi'; }
+  function thisThrowsErr () { throw 'err'; }
 
-  xit('.then adds a new deferral to its handler group', function(){
+  it('.then adds a new deferral to its handler group', function(){
     promiseA.then();
     expect( promiseA.handlerGroups[0].forwarder instanceof Deferral ).toBe( true );
   });
 
-  xit('.then returns the promise from that deferral', function(){
+  it('.then returns the promise from that deferral', function(){
     var promiseB = promiseA.then();
     expect( promiseB ).toBe( promiseA.handlerGroups[0].forwarder.$promise );
   });
@@ -46,7 +47,7 @@ describe('For a given promiseA (pA),', function(){
   describe('the promiseB (pB) returned by .then', function(){
 
     // Fulfillment bubbles down to the first available success handler.
-    xit('is fulfilled with pA.value if pA is fulfilled but has no success handler', function(){
+    it('is fulfilled with pA.value if pA is fulfilled but has no success handler', function(){
       var promiseB = promiseA.then();
       deferralA.resolve( 9001 );
       expect( promiseB.state ).toBe( 'fulfilled' );
@@ -54,7 +55,7 @@ describe('For a given promiseA (pA),', function(){
     });
 
     // Rejection bubbles down to the first available error handler.
-    xit('is rejected with pA.value if pA is rejected but has no error handler', function(){
+    it('is rejected with pA.value if pA is rejected but has no error handler', function(){
       var promiseB = promiseA.then();
       deferralA.reject( 'darn' );
       expect( promiseB.state ).toBe( 'rejected' );
@@ -63,14 +64,14 @@ describe('For a given promiseA (pA),', function(){
 
     // Exceptions cause the returned promise to be rejected with the error.
     // Hint: you need to know how to use try-catch to make this work.
-    xit("is rejected with e if pA's success handler throws an error e", function(){
+    it("is rejected with e if pA's success handler throws an error e", function(){
       var promiseB = promiseA.then( thisThrowsErr );
       deferralA.resolve();
       expect( promiseB.state ).toBe( 'rejected' );
       expect( promiseB.value ).toBe( 'err' );
     });
 
-    xit("is rejected with e if pA's error handler throws an error e", function(){
+    it("is rejected with e if pA's error handler throws an error e", function(){
       var promiseB = promiseA.catch( thisThrowsErr );
       deferralA.reject();
       expect( promiseB.state ).toBe( 'rejected' );
@@ -78,7 +79,7 @@ describe('For a given promiseA (pA),', function(){
     });
 
     // This is for normal (non-promise) return values
-    xit("is fulfilled with the return value of pA's success handler", function(){
+    it("is fulfilled with the return value of pA's success handler", function(){
       var promiseB = promiseA.then( thisReturnsHi );
       deferralA.resolve( 'an ordinary value' );
       expect( promiseB.state ).toBe( 'fulfilled' );
@@ -86,7 +87,7 @@ describe('For a given promiseA (pA),', function(){
     });
 
     // This is for normal (non-promise) return values
-    xit("is fulfilled with the return value of pA's error handler", function(){
+    it("is fulfilled with the return value of pA's error handler", function(){
       /* Why fulfilled? This is similar to try-catch. If promiseA is
       rejected (equivalent to try failed), we pass the reason to
       promiseA's error handler (equivalent to catch). We have now
@@ -105,7 +106,7 @@ describe('For a given promiseA (pA),', function(){
     Instead, we want to make promiseB resolve/reject with pX's
     resolve/reject data – in essence, to "become" pX by copying
     pX's behavior. This test is a brain-bender. */
-    xit("mimics promiseX if pA's success handler returns promiseX", function(){
+    it("mimics promiseX if pA's success handler returns promiseX", function(){
       var deferralX = defer();
       var promiseX = deferralX.$promise;
       var promiseB = promiseA.then( function () { return promiseX; } );
@@ -114,7 +115,7 @@ describe('For a given promiseA (pA),', function(){
       expect( promiseB.value ).toBe( 'testing' );
     });
 
-    xit("mimics promiseX if pA's error handler returns promiseX", function(){
+    it("mimics promiseX if pA's error handler returns promiseX", function(){
       var deferralX = defer();
       var promiseX = deferralX.$promise;
       var promiseB = promiseA.catch( function () { return promiseX; } );
@@ -123,7 +124,7 @@ describe('For a given promiseA (pA),', function(){
       expect( promiseB.value ).toBe( 'testing' );
     });
 
-    xit('can chain .then many times', function(){
+    it('can chain .then many times', function(){
       var add1 = function (num) { return ++num; };
       var test = 0;
       promiseA.then( add1 ).then( add1 ).then().then( function (data) {

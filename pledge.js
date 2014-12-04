@@ -1,8 +1,7 @@
 /*----------------------------------------------------------------
-Promises Workshop: build the vow.js deferral-style promise library
+Promises Workshop: build the pledge.js deferral-style promise library
 ----------------------------------------------------------------*/
 // YOUR CODE HERE:
-
 
 
 
@@ -20,9 +19,9 @@ module.exports = {
 
 So in a Node-based project we could write things like this:
 
-var vow = require('vow');
-var myDefer1 = vow.defer();
+var pledge = require('pledge');
+var myDefer1 = pledge.defer();
 var myPromise1 = myDefer1.$promise;
 …
-var promiseForResults = vow.all( [promise1, promise2] );
+var promiseForResultsArray = pledge.all( [promise1, promise2] );
 --------------------------------------------------------*/

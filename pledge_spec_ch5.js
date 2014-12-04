@@ -22,9 +22,9 @@ indispensable secondary methods that will be good to understand.
 ========================================================*/
 
 // all() is probably the most useful utility function in promise libraries.
-describe('The vow.js all() function', function(){
+describe('The pledge.js all() function', function(){
 
-  xit('takes an array of promises', function(){
+  it('takes an array of promises', function(){
 
   });
 

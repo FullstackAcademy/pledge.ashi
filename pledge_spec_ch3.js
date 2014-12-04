@@ -22,13 +22,13 @@ but notification is a little different. Finish up the
 
 describe('Another promise', function(){
 
-  var thingDeferral, promiseForThing, log, fn;
+  var fn, thingDeferral, promiseForThing, log;
   fn = {
     logOops: function () { log.push({ code: 'oops' }); },
     logInput: function (input) { log.push( input ); }
   };
   beforeEach(function(){
-    thingDeferral  = defer();
+    thingDeferral = defer();
     promiseForThing = thingDeferral.$promise;
     log = [];
     spyOn( fn, 'logOops' ).and.callThrough();
@@ -37,7 +37,7 @@ describe('Another promise', function(){
 
   describe('that is not yet rejected', function(){
 
-    xit('does not call error handlers yet', function(){
+    it('does not call error handlers yet', function(){
       promiseForThing.then( null, fn.logOops );
       expect( fn.logOops ).not.toHaveBeenCalled();
     });
@@ -46,33 +46,33 @@ describe('Another promise', function(){
 
   describe('that is already rejected', function(){
 
-    var myReason = { code: 'timed out' };
+    var theReason = { code: 'timed out' };
     beforeEach(function(){
-      thingDeferral.reject( myReason );
+      thingDeferral.reject( theReason );
     });
 
-    xit('does not call any success handlers', function(){
+    it('does not call any success handlers', function(){
       promiseForThing.then( fn.logOops );
       expect( fn.logOops ).not.toHaveBeenCalled();
     });
 
-    xit('calls an error handler added by .then', function(){
+    it('calls an error handler added by .then', function(){
       promiseForThing.then( null, fn.logOops );
       expect( fn.logOops ).toHaveBeenCalled();
     });
 
-    xit("calls an error handler by passing in the promise's value", function(){
+    it("calls an error handler by passing in the promise's value", function(){
       promiseForThing.then( null, fn.logInput );
-      expect( fn.logInput ).toHaveBeenCalledWith( myReason );
+      expect( fn.logInput ).toHaveBeenCalledWith( theReason );
     });
 
-    xit('calls each error handler once per attachment', function(){
+    it('calls each error handler once per attachment', function(){
       promiseForThing.then( null, fn.logOops );
       promiseForThing.then( null, fn.logOops );
       expect( fn.logOops.calls.count() ).toBe( 2 );
     });
 
-    xit('calls each error handler in the order added', function(){
+    it('calls each error handler in the order added', function(){
       promiseForThing.then( null, fn.logOops );
       promiseForThing.then( null, fn.logInput );
       expect( log ).toEqual( [{ code: 'oops'}, {code: 'timed out'}] );
@@ -82,29 +82,29 @@ describe('Another promise', function(){
 
   describe('that already has an error handler', function(){
 
-    var myReason = { code: 'unauthorized' };
+    var theReason = { code: 'unauthorized' };
 
-    xit('calls that handler when rejected', function(){
+    it('calls that handler when rejected', function(){
       promiseForThing.then( null, fn.logInput );
-      thingDeferral.reject( myReason );
-      expect( fn.logInput ).toHaveBeenCalledWith( myReason );
+      thingDeferral.reject( theReason );
+      expect( fn.logInput ).toHaveBeenCalledWith( theReason );
     });
 
-    xit('calls all its error handlers one time when rejected', function(){
+    it('calls all its error handlers in order one time when rejected', function(){
       promiseForThing.then( null, fn.logInput );
       promiseForThing.then( null, fn.logOops );
-      thingDeferral.reject( myReason );
+      thingDeferral.reject( theReason );
       expect( log ).toEqual( [{code: 'unauthorized'}, {code: 'oops'}] );
     });
 
   });
 
-  // Demonstration — the next two specs should pass already
   describe('with both success and error handlers', function(){
 
     var ui;
     beforeEach(function(){
       ui = { animals: ['kitten', 'puppy'], warning: null };
+
       promiseForThing.then(
         function thingSuccess (thing) {
           ui.animals.push( thing.animal );
@@ -113,20 +113,22 @@ describe('Another promise', function(){
           ui.warning = reason.message;
         }
       );
+
     });
 
-    xit('can do stuff with fulfilled data', function(){
+    // Demonstration — the next two specs should pass already
+    it('can do stuff with fulfilled data', function(){
       thingDeferral.resolve({ animal: 'duckling' });
       expect( ui.animals[2] ).toBe( 'duckling' );
     });
 
-    xit('can deal with rejection reasons', function(){
+    it('can deal with rejection reasons', function(){
       thingDeferral.reject({ message: 'unauthorized' });
       expect( ui.warning ).toBe( 'unauthorized' );
     });
 
     // Optional but recommended garbage collection
-    xit('discards handlers that are no longer needed', function(){
+    it('discards handlers that are no longer needed', function(){
       thingDeferral.resolve({ animal: 'chipmunk' });
       expect( promiseForThing.handlerGroups ).toEqual( [] );
     });
@@ -140,26 +142,23 @@ describe('Another promise', function(){
 // Hint: the internals of this method can be coded as one short line.
 describe("A promise's .catch(errorFn) method", function(){
 
-  var log, deferral, promise;
+  var deferral, promise;
   beforeEach(function(){
      deferral = defer();
      promise = deferral.$promise;
-     log = [];
+     spyOn( promise, 'then' ).and.callThrough();
   });
-  var logIt = function (reason) { log.push( reason ); };
+  function myFunc (reason) { console.log(reason) }
 
-  xit('attaches errorFn as an error handler', function(){
-    promise.catch( logIt );
-    expect( promise.handlerGroups[0].onReject ).toBe( logIt );
-    expect( promise.handlerGroups[0].onFulfill ).toBe( undefined );
-    deferral.reject( 'err' );
-    expect( log[0] ).toBe( 'err' );
+  it('attaches errorFn as an error handler', function(){
+    promise.catch( myFunc );
+    expect( promise.then ).toHaveBeenCalledWith( null, myFunc );
   });
 
   // This spec may seem arbitrary now, but will become important in Ch. 4.
-  xit('returns the same kind of thing that .then would', function(){
-    var return1 = promise.catch( logIt );
-    var return2 = promise.then( null, logIt );
+  it('returns the same kind of thing that .then would', function(){
+    var return1 = promise.catch( myFunc );
+    var return2 = promise.then( null, myFunc );
     expect( return1 ).toEqual( return2 );
   });
 
@@ -168,60 +167,66 @@ describe("A promise's .catch(errorFn) method", function(){
 // The .notify method is slightly different:
 describe("A deferral's .notify method", function(){
 
-  var downloadDeferral, promiseForDownload, progress;
+  var fn, downloadDeferral, promiseForDownload;
+  fn = {
+    setLoadingBar: function (num) { /* update the loading bar */ },
+  };
   beforeEach(function(){
-    downloadDeferral  = defer();
+    downloadDeferral = defer();
     promiseForDownload = downloadDeferral.$promise;
-    loadingBar = 0;
-  });
-  var add10 = function () { loadingBar += 10; };
-  var setLoadingBar = function (num) { loadingBar = num; };
-
-  xit("calls a promise's update handler attached via .then", function(){
-    promiseForDownload.then(null, null, add10);
-    expect( loadingBar ).toBe( 0 );
-    downloadDeferral.notify( 'hello' );
-    expect( loadingBar ).toBe( 10 );
+    spyOn( fn, 'setLoadingBar' ).and.callThrough();
   });
 
-  xit('calls an update handler with some information', function(){
-    promiseForDownload.then(null, null, setLoadingBar);
-    expect( loadingBar ).toBe( 0 );
+  it("calls a promise's update handler attached via .then", function(){
+    promiseForDownload.then(null, null, fn.setLoadingBar);
+    expect( fn.setLoadingBar ).not.toHaveBeenCalled();
+    downloadDeferral.notify();
+    expect( fn.setLoadingBar ).toHaveBeenCalled();
+  });
+
+  it('calls an update handler with some information', function(){
+    promiseForDownload.then(null, null, fn.setLoadingBar);
+    expect( fn.setLoadingBar ).not.toHaveBeenCalled();
     downloadDeferral.notify( 17 );
-    expect( loadingBar ).toBe( 17 );
+    expect( fn.setLoadingBar ).toHaveBeenCalledWith( 17 );
   });
 
-  xit("never affects the promise's value", function(){
+  it("never affects the promise's value", function(){
     downloadDeferral.notify( 50 );
     expect( promiseForDownload.value ).toBe( undefined );
   });
 
-  xit('calls all attached update handlers', function(){
-    promiseForDownload.then(null, null, add10);
-    promiseForDownload.then(null, null, add10);
-    expect( loadingBar ).toBe( 0 );
-    downloadDeferral.notify( 'hi there' );
-    expect( loadingBar ).toBe( 20 );
+  it('calls all attached update handlers once per attachment', function(){
+    promiseForDownload.then(null, null, fn.setLoadingBar);
+    promiseForDownload.then(null, null, fn.setLoadingBar);
+    expect( fn.setLoadingBar ).not.toHaveBeenCalled();
+    downloadDeferral.notify();
+    expect( fn.setLoadingBar.calls.count() ).toBe( 2 );
   });
 
-  xit('only works while the promise is pending', function(){
-    promiseForDownload.then(null, null, setLoadingBar);
+  it('only works while the promise is pending', function(){
+    promiseForDownload.then(null, null, fn.setLoadingBar);
     downloadDeferral.notify( 50 );
-    expect( loadingBar ).toBe( 50 );
-    downloadDeferral.resolve( ['foo', 'bar'] );
+    expect( fn.setLoadingBar ).toHaveBeenCalledWith( 50 );
+    downloadDeferral.resolve( 'abcdefghijklmnopqrstuvwxyz1234567890' );
     downloadDeferral.notify( 75 );
-    expect( loadingBar ).toBe( 50 );
+    expect( fn.setLoadingBar ).not.toHaveBeenCalledWith( 75 );
+    expect( fn.setLoadingBar.calls.count() ).toBe( 1 );
   });
 
-  xit('can be called multiple times before fulfillment/rejection', function(){
-    promiseForDownload.then(null, null, setLoadingBar);
+  it('can be called multiple times before fulfillment/rejection', function(){
+    promiseForDownload.then(null, null, fn.setLoadingBar);
     downloadDeferral.notify( 12 );
-    expect( loadingBar ).toBe( 12 );
+    expect( fn.setLoadingBar.calls.count() ).toBe( 1 );
     downloadDeferral.notify( 38 );
-    expect( loadingBar ).toBe( 38 );
+    expect( fn.setLoadingBar.calls.count() ).toBe( 2 );
     downloadDeferral.reject( 'corrupted data' );
     downloadDeferral.notify( 54 );
-    expect( loadingBar ).toBe( 38 );
+    expect( fn.setLoadingBar.calls.count() ).toBe( 2 );
   });
 
 });
+
+/*
+That does it for attaching and triggering our handlers! In the next chapter, we will dive deeply into how .then chaining actually works.
+*/
