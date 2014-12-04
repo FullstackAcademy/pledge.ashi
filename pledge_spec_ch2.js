@@ -105,6 +105,8 @@ describe('A promise', function(){
     });
 
     it('calls each success handler once per attachment', function(){
+      promiseForNum.then( fn.setFoo10 );
+      expect( fn.setFoo10.calls.count() ).toBe( 1 );
       promiseForNum.then( fn.addToFoo );
       promiseForNum.then( fn.addToFoo );
       expect( fn.addToFoo.calls.count() ).toBe( 2 );
@@ -137,10 +139,10 @@ describe('A promise', function(){
 
   });
 
-  /*
-  We've just made something nifty. A promise's .then can
-  attach behavior both before & after the promise is actually
-  resolved, and we know that the actions will run when they can.
-  */
-
 });
+
+/*
+We've just made something nifty. A promise's .then can
+attach behavior both before & after the promise is actually
+resolved, and we know that the actions will run when they can.
+*/

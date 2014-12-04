@@ -67,6 +67,8 @@ describe('Another promise', function(){
     });
 
     it('calls each error handler once per attachment', function(){
+      promiseForThing.then( null, fn.logInput );
+      expect( fn.logInput.calls.count() ).toBe( 1 );
       promiseForThing.then( null, fn.logOops );
       promiseForThing.then( null, fn.logOops );
       expect( fn.logOops.calls.count() ).toBe( 2 );
@@ -228,5 +230,7 @@ describe("A deferral's .notify method", function(){
 });
 
 /*
-That does it for attaching and triggering our handlers! In the next chapter, we will dive deeply into how .then chaining actually works.
+That does it for attaching and triggering our handlers!
+In the next chapter, we will dive deeply into how .then
+chaining actually works.
 */
