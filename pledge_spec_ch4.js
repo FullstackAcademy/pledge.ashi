@@ -148,3 +148,10 @@ describe('For a given promiseA (pA)', function(){
   // You could bubble notifications too, but we will skip that.
   // In fact there is some disagreement as to how notifications should work.
 });
+
+/*
+Wow! If you got this far, congratulations. We omitted certain
+details (e.g. handlers must always be called in a true async
+wrapper), but you have built a promise library with most of
+the standard behavior.
+*/
