@@ -64,22 +64,6 @@ describe('For a given promiseA (pA)', function(){
       expect( promiseB.value ).toBe( 'darn' );
     });
 
-    // Exceptions cause the returned promise to be rejected with the error.
-    // Hint: you need to know how to use try-catch to make this work.
-    it("if pA's success handler throws an error e, pB is rejected with e", function(){
-      var promiseB = promiseA.then( thisThrowsErr );
-      deferralA.resolve();
-      expect( promiseB.state ).toBe( 'rejected' );
-      expect( promiseB.value ).toBe( 'err' );
-    });
-
-    it("if pA's error handler throws an error e, pB is rejected with e", function(){
-      var promiseB = promiseA.catch( thisThrowsErr );
-      deferralA.reject();
-      expect( promiseB.state ).toBe( 'rejected' );
-      expect( promiseB.value ).toBe( 'err' );
-    });
-
     // This is for normal (non-promise) return values
     it("if pA's success handler returns a value x, pB is fulfilled with x", function(){
       var promiseB = promiseA.then( thisReturnsHi );
@@ -101,6 +85,22 @@ describe('For a given promiseA (pA)', function(){
       deferralA.reject();
       expect( promiseB.state ).toBe( 'fulfilled' );
       expect( promiseB.value ).toBe( 'hi' );
+    });
+
+    // Exceptions cause the returned promise to be rejected with the error.
+    // Hint: you need to know how to use try-catch to make this work.
+    it("if pA's success handler throws an error e, pB is rejected with e", function(){
+      var promiseB = promiseA.then( thisThrowsErr );
+      deferralA.resolve();
+      expect( promiseB.state ).toBe( 'rejected' );
+      expect( promiseB.value ).toBe( 'err' );
+    });
+
+    it("if pA's error handler throws an error e, pB is rejected with e", function(){
+      var promiseB = promiseA.catch( thisThrowsErr );
+      deferralA.reject();
+      expect( promiseB.state ).toBe( 'rejected' );
+      expect( promiseB.value ).toBe( 'err' );
     });
 
     /* What if promiseA returns a promiseZ? You could handle pZ like a
