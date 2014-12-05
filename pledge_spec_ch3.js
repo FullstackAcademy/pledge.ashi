@@ -158,7 +158,10 @@ describe("A promise's .catch(errorFn) method", function(){
     expect( promise.then ).toHaveBeenCalledWith( null, myFunc );
   });
 
-  // This spec may seem arbitrary now, but will become important in Ch. 4.
+  /* This spec will probably already pass at this point, because
+  by default all functions return true. However, as you start Ch. 4,
+  it may fail. If that happens, you will have to return here and
+  fix .catch — this time, taking the Ch. 4 specs into account. */
   xit('returns the same kind of thing that .then would', function(){
     var return1 = promise.catch( myFunc );
     var return2 = promise.then( null, myFunc );
