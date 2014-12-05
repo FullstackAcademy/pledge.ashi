@@ -42,6 +42,7 @@ Our `pledge.js` library is intended to be a learning exercise. Some of the [Prom
 * Handler functions should always be called in an async wrapper (e.g. `setTimeout`). This makes their behavior more deterministic as they execute after a following synchronous code line.
 * The `.then()` function should handle assimilation of promises from other libraries ("thenables"). That makes promises interoperable.
 * A promise's state and value should not be directly editable (public), only influenced or accessed through the resolver functions and `.then()`.
+* For simplicity's sake, `pledge.js` does not follow strict standards terminology. For example, it treats "resolved" and "fulfilled" as synonyms and only uses the former; similarly, it considers a pledge's `value` as meaning either its fulfilled `data` or rejected `reason`.
 
 These and other technical details are important, but for someone just beginning to learn they distract from the core behavior and use patterns.
 
