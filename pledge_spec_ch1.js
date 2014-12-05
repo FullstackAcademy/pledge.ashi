@@ -39,7 +39,7 @@ describe('The pledge.js library', function(){
     expect( typeof Deferral ).toBe( 'function' );
   });
 
-  it('has a defer function that returns unique deferrals', function(){
+  xit('has a defer function that returns unique deferrals', function(){
     var deferral1 = defer();
     var deferral2 = defer();
     expect( deferral1 instanceof Deferral ).toBe( true );
@@ -50,7 +50,7 @@ describe('The pledge.js library', function(){
 
 describe('A deferral', function(){
 
-  it('is associated with a unique $promise', function(){
+  xit('is associated with a unique $promise', function(){
     var myDeferral = defer();
     var promise1 = myDeferral.$promise;
     var promise2 = defer().$promise;
@@ -62,7 +62,7 @@ describe('A deferral', function(){
 
 describe("A deferral's associated promise", function(){
 
-  it('starts with "pending" state', function(){
+  xit('starts with "pending" state', function(){
     var deferral = defer();
     var promise = deferral.$promise;
     expect( promise.state ).toBe( 'pending' );
@@ -81,7 +81,7 @@ describe('Resolving through a deferral', function(){
 
   // Reminder: common class methods should be defined on a prototype.
 
-  it('changes its promise state to "resolved"', function(){
+  xit('changes its promise state to "resolved"', function(){
     /* NOTE: in strict standards language, a promise that succeeds is
     said to be "fulfilled." Since $q and Q use their .resolve method to
     attempt fullfillment, for simplicity's sake pledge.js will treat
@@ -91,14 +91,14 @@ describe('Resolving through a deferral', function(){
     expect( promise.state ).toBe( 'resolved' );
   });
 
-  it('can send data to the promise for storage', function(){
+  xit('can send data to the promise for storage', function(){
     var someData = { name: 'Harry Potter' };
     deferral.resolve( someData );
     expect( promise.value ).toBe( someData );
   });
 
   // Hint: use the pending status.
-  it('does not affect an already-resolved promise', function(){
+  xit('does not affect an already-resolved promise', function(){
     var data1 = { name: 'Harry Potter' };
     var data2 = { name: 'Gandalf' };
     deferral.resolve( data1 );
@@ -106,7 +106,7 @@ describe('Resolving through a deferral', function(){
     expect( promise.value ).toBe( data1 );
   });
 
-  it('works even with falsey values', function(){
+  xit('works even with falsey values', function(){
     var data1 = null;
     var data2 = 'oops!';
     deferral.resolve( data1 );
@@ -124,19 +124,19 @@ describe('Rejecting through a deferral', function(){
     promise  = deferral.$promise;
   });
 
-  it('changes its promise state to "rejected"', function(){
+  xit('changes its promise state to "rejected"', function(){
     deferral.reject();
     expect( promise.state ).toBe( 'rejected' );
   });
 
-  it('can send a reason to the promise for storage', function(){
+  xit('can send a reason to the promise for storage', function(){
     var myReason = { error: 'bad request' };
     deferral.reject( myReason );
     expect( promise.value ).toBe( myReason );
   });
 
   // Hint: use the pending status.
-  it('does not affect an already-rejected promise', function(){
+  xit('does not affect an already-rejected promise', function(){
     var reason1 = { error: 'bad request' };
     var reason2 = { error: 'timed out' };
     deferral.reject( reason1 );
@@ -144,7 +144,7 @@ describe('Rejecting through a deferral', function(){
     expect( promise.value ).toBe( reason1 );
   });
 
-  it('works even with falsey values', function(){
+  xit('works even with falsey values', function(){
     var reason1 = null;
     var reason2 = 'oops!';
     deferral.reject( reason1 );
@@ -165,14 +165,14 @@ describe('Settled promises never change state:', function(){
   // If you used the pending status for your "does not affect
   // already resolved/rejected" specs, these two specs should pass already.
 
-  it('reject does not overwrite resolve', function(){
+  xit('reject does not overwrite resolve', function(){
     deferral.resolve( 'Dumbledore' );
     deferral.reject( 404 );
     expect( promise.state ).toBe( 'resolved' );
     expect( promise.value ).toBe( 'Dumbledore' );
   });
 
-  it('resolve does not overwrite reject', function(){
+  xit('resolve does not overwrite reject', function(){
     deferral.reject( 404 );
     deferral.resolve( 'Dumbledore' );
     expect( promise.state ).toBe( 'rejected' );
@@ -183,10 +183,10 @@ describe('Settled promises never change state:', function(){
 
 /*
 At this point we have some basic facts established. A promise
-starts out with pending state and no value. At some point, it
-can become resolved with data, or rejected with a reason.
-Once it is resolved or rejected, it is stuck in that state
+starts out with pending state and no value. At some point, the
+promise can become resolved with data, or rejected with a reason.
+Once resolved or rejected, a promise is stuck in that state
 and cannot be changed again. The deferral object is a kind of
-promise parent and manager; it can resolve or reject its
+promise parent and manager, which can resolve or reject its
 associated promise.
 */
