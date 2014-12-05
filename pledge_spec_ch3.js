@@ -119,7 +119,7 @@ describe('Another promise', function(){
     });
 
     // Demonstration — the next two specs should pass already
-    it('can do stuff with fulfilled data', function(){
+    it('can do stuff with resolved data', function(){
       thingDeferral.resolve({ animal: 'duckling' });
       expect( ui.animals[2] ).toBe( 'duckling' );
     });

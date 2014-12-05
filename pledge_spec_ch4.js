@@ -47,11 +47,11 @@ describe('For a given promiseA (pA)', function(){
   describe('that returns promiseB (pB) via .then:', function(){
 
     // Fulfillment bubbles down to the first available success handler.
-    it("if pA is fulfilled but has no success handler, pB is fulfilled with pA's value", function(){
+    it("if pA is resolved but has no success handler, pB is resolved with pA's value", function(){
       var promiseB = promiseA.then();
       deferralA.resolve( 9001 );
       // do not set state manually; 'resolve' should be called somewhere!
-      expect( promiseB.state ).toBe( 'fulfilled' );
+      expect( promiseB.state ).toBe( 'resolved' );
       expect( promiseB.value ).toBe( 9001 );
     });
 
@@ -65,16 +65,16 @@ describe('For a given promiseA (pA)', function(){
     });
 
     // This is for normal (non-promise) return values
-    it("if pA's success handler returns a value x, pB is fulfilled with x", function(){
+    it("if pA's success handler returns a value x, pB is resolved with x", function(){
       var promiseB = promiseA.then( thisReturnsHi );
       deferralA.resolve( 'an ordinary value' );
-      expect( promiseB.state ).toBe( 'fulfilled' );
+      expect( promiseB.state ).toBe( 'resolved' );
       expect( promiseB.value ).toBe( 'hi' );
     });
 
     // This is for normal (non-promise) return values
-    it("if pA's error handler returns a value x, pB is fulfilled with x", function(){
-      /* Why fulfilled? This is similar to try-catch. If promiseA is
+    it("if pA's error handler returns a value x, pB is resolved with x", function(){
+      /* Why resolved? This is similar to try-catch. If promiseA is
       rejected (equivalent to try failed), we pass the reason to
       promiseA's error handler (equivalent to catch). We have now
       successfully handled the error, so promiseB should represent
@@ -83,7 +83,7 @@ describe('For a given promiseA (pA)', function(){
       fails somehow (which we already addressed in a previous test). */
       var promiseB = promiseA.catch( thisReturnsHi );
       deferralA.reject();
-      expect( promiseB.state ).toBe( 'fulfilled' );
+      expect( promiseB.state ).toBe( 'resolved' );
       expect( promiseB.value ).toBe( 'hi' );
     });
 

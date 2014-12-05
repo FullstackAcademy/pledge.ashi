@@ -84,14 +84,13 @@ describe('Resolving through a deferral', function(){
 
   // Reminder: common class methods should be defined on a prototype.
 
-  it('(usually) changes its promise state to "fulfilled"', function(){
-    /* Why not "resolved"? Strictly speaking, a promise can resolve
-    successfully (fulfillment) or unsuccessfully (rejection). In $q / Q,
-    .resolve normally fulfills the promise, but can in some edge cases
-    result in a pending or rejected promise. For our purposes, you may
-    consider resolve and fulfill to mean the same thing. */
+  it('(usually) changes its promise state to "resolved"', function(){
+    /* NOTE: in strict standards language, a promise that succeeds is
+    said to be "resolved." Since $q and Q use their .resolve method to
+    attempt fullfillment, for simplicity's sake pledge.js will treat
+    fulfillment and resolution as synonyms, though this is non-standard. */
     deferral.resolve();
-    expect( promise.state ).toBe( 'fulfilled' );
+    expect( promise.state ).toBe( 'resolved' );
   });
 
   it('can send data to the promise for storage', function(){
@@ -101,7 +100,7 @@ describe('Resolving through a deferral', function(){
   });
 
   // Hint: use the pending status.
-  it('does not affect an already-fulfilled promise', function(){
+  it('does not affect an already-resolved promise', function(){
     var data1 = { name: 'Harry Potter' };
     var data2 = { name: 'Gandalf' };
     deferral.resolve( data1 );
@@ -158,7 +157,7 @@ describe('Rejecting through a deferral', function(){
 });
 
 // If you properly used the pending status for your "does not affect
-// already fulfilled/rejected" specs, this should pass already.
+// already resolved/rejected" specs, this should pass already.
 describe('Settled promises never change state:', function(){
 
   var deferral, promise;
@@ -170,7 +169,7 @@ describe('Settled promises never change state:', function(){
   it('reject does not overwrite resolve', function(){
     deferral.resolve( 'Dumbledore' );
     deferral.reject( 404 );
-    expect( promise.state ).toBe( 'fulfilled' );
+    expect( promise.state ).toBe( 'resolved' );
     expect( promise.value ).toBe( 'Dumbledore' );
   });
 
@@ -186,8 +185,8 @@ describe('Settled promises never change state:', function(){
 /*
 At this point we have some basic facts established. A promise
 starts out with pending state and no value. At some point, it
-can become fulfilled with data, or rejected with a reason.
-Once it is fulfilled or rejected, it is stuck in that state
+can become resolved with data, or rejected with a reason.
+Once it is resolved or rejected, it is stuck in that state
 and cannot be changed again. The deferral object is a kind of
 promise parent and manager; it can resolve or reject its
 associated promise.

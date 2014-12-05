@@ -78,7 +78,7 @@ describe('A promise', function(){
     spyOn( fn, 'addToFoo' ).and.callThrough();
   });
 
-  describe('that is not yet fulfilled', function(){
+  describe('that is not yet resolved', function(){
 
     it('does not call any success handlers yet', function(){
       promiseForNum.then( fn.setFoo10 );
@@ -87,7 +87,7 @@ describe('A promise', function(){
 
   });
 
-  describe('that is already fulfilled', function(){
+  describe('that is already resolved', function(){
 
     beforeEach(function(){
       numDeferral.resolve( 25 );
@@ -124,13 +124,13 @@ describe('A promise', function(){
   // But what if events occur in opposite order?
   describe('that already has a success handler', function(){
 
-    it('calls that handler when fulfilled', function(){
+    it('calls that handler when resolved', function(){
       promiseForNum.then( fn.setFoo10 );
       numDeferral.resolve();
       expect( fn.setFoo10 ).toHaveBeenCalled();
     });
 
-    it('calls all its success handlers in order one time when fulfilled', function(){
+    it('calls all its success handlers in order one time when resolved', function(){
       promiseForNum.then( fn.setFoo10 );
       promiseForNum.then( fn.addToFoo );
       numDeferral.resolve( 25 );
