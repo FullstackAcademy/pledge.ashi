@@ -39,6 +39,8 @@ describe("A promise's .then method", function(){
     expect( promise.handlerGroups[0].onResolve ).toBe( successCb );
     expect( promise.handlerGroups[0].onReject  ).toBe( errorCb );
     // Update callbacks are handled differently from success and error cbs.
+    // It may seem odd to put them in a separate array, but trust me:
+    // it will make things easier down the road.
     expect( promise.updateCbs[0] ).toBe( updateCb );
   });
 
