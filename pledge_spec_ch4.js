@@ -46,7 +46,7 @@ describe('For a given promiseA (pA)', function(){
 
   describe('that returns promiseB (pB) via .then:', function(){
 
-    // Fulfillment bubbles down to the first available success handler.
+    // Resolution bubbles down to the first available success handler.
     xit("if pA is resolved but has no success handler, pB is resolved with pA's value", function(){
       var promiseB = promiseA.then();
       deferralA.resolve( 9001 );

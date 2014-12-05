@@ -217,7 +217,7 @@ describe("A deferral's .notify method", function(){
     expect( fn.setLoadingBar.calls.count() ).toBe( 1 );
   });
 
-  xit('can be called multiple times before fulfillment/rejection', function(){
+  xit('can be called multiple times before resolution/rejection', function(){
     promiseForDownload.then(null, null, fn.setLoadingBar);
     downloadDeferral.notify( 12 );
     expect( fn.setLoadingBar.calls.count() ).toBe( 1 );

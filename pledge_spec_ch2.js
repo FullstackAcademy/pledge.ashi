@@ -36,7 +36,7 @@ describe("A promise's .then method", function(){
 
   xit('adds groups of handlers (callback functions) to the promise', function(){
     promise.then( successCb , errorCb, updateCb );
-    expect( promise.handlerGroups[0].onFulfill ).toBe( successCb );
+    expect( promise.handlerGroups[0].onResolve ).toBe( successCb );
     expect( promise.handlerGroups[0].onReject  ).toBe( errorCb );
     // Update callbacks are handled differently from success and error cbs.
     expect( promise.updateCbs[0] ).toBe( updateCb );
@@ -44,18 +44,18 @@ describe("A promise's .then method", function(){
 
   xit('can be called multiple times to add more handlers', function(){
     promise.then( successCb , errorCb, updateCb );
-    expect( promise.handlerGroups[0].onFulfill ).toBe( successCb );
+    expect( promise.handlerGroups[0].onResolve ).toBe( successCb );
     expect( promise.handlerGroups[0].onReject  ).toBe( errorCb );
     expect( promise.updateCbs[0] ).toBe( updateCb );
     promise.then( s2, f2, u2 );
-    expect( promise.handlerGroups[1].onFulfill ).toBe( s2 );
+    expect( promise.handlerGroups[1].onResolve ).toBe( s2 );
     expect( promise.handlerGroups[1].onReject  ).toBe( f2 );
     expect( promise.updateCbs[1] ).toBe( u2 );
   });
 
   xit('only attaches functions', function(){
     promise.then( 'a string', errorCb, 6275309 );
-    expect( promise.handlerGroups[0].onFulfill ).toBeFalsy();
+    expect( promise.handlerGroups[0].onResolve ).toBeFalsy();
     expect( promise.handlerGroups[0].onReject  ).toBe( errorCb );
     expect( promise.updateCbs ).toEqual( [] );
   });
