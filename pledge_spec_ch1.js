@@ -86,7 +86,7 @@ describe('Resolving through a deferral', function(){
 
   it('(usually) changes its promise state to "resolved"', function(){
     /* NOTE: in strict standards language, a promise that succeeds is
-    said to be "resolved." Since $q and Q use their .resolve method to
+    said to be "fulfilled." Since $q and Q use their .resolve method to
     attempt fullfillment, for simplicity's sake pledge.js will treat
     fulfillment and resolution as synonyms, though this is non-standard. */
     deferral.resolve();
