@@ -39,6 +39,8 @@ describe('For a given promiseA (pA)', function(){
     expect( promiseA.handlerGroups[0].forwarder instanceof Deferral ).toBe( true );
   });
 
+  // Passing this may break your .catch from chapter 3. If that happens,
+  // you will have to go back and fix .catch, taking this spec into account.
   xit('.then returns the promise from that deferral', function(){
     var promiseB = promiseA.then();
     expect( promiseB ).toBe( promiseA.handlerGroups[0].forwarder.$promise );
