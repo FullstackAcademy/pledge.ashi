@@ -94,6 +94,7 @@ describe('A promise', function(){
     });
 
     // Recommended: add a .handle method to your promise prototype.
+
     it('calls a success handler added by .then', function(){
       promiseForNum.then( fn.setFoo10 );
       expect( fn.setFoo10 ).toHaveBeenCalled();
@@ -113,8 +114,9 @@ describe('A promise', function(){
       expect( fn.addToFoo ).toHaveBeenCalledWith( 25 );
     });
 
-    it('calls each success handler in the order added', function(){
+    it('calls each success handler as it is added', function(){
       promiseForNum.then( fn.setFoo10 );
+      expect( foo ).toBe( 10 );
       promiseForNum.then( fn.addToFoo );
       expect( foo ).toBe( 35 );
     });
@@ -146,4 +148,7 @@ describe('A promise', function(){
 We've just made something nifty. A promise's .then can
 attach behavior both before & after the promise is actually
 resolved, and we know that the actions will run when they can.
+The .then method can also be called multiple times, so you can
+attach callbacks to run in different parts of your code, and
+they will all run once the promise is resolved.
 */
