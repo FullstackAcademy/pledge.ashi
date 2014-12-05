@@ -17,8 +17,8 @@ npm install -g testem
 Next, you'll need to clone this repo to your local machine and `cd` into it:
 
 ```shell
-git clone https://github.com/glebec/make-promise-challenge.git
-cd make-promise-challenge
+git clone https://github.com/glebec/make-promise.git
+cd make-promise
 ```
 
 Then to execute the spec, simply run `testem` in that directory and open the link displayed in your terminal. You will see all the upcoming tests as "pending" (yellow). Start writing your own code in the `pledge.js` file. When you pass a test (green), change the next pending test from `xit` to `it` and save. This spec is iterative and opinionated; it is recommended that you do the tests in order.
