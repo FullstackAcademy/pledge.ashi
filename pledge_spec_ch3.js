@@ -195,6 +195,7 @@ describe("A deferral's .notify method", function(){
   });
 
   xit("never affects the promise's value", function(){
+    downloadDeferral.then( fn.setLoadingBar );
     downloadDeferral.notify( 50 );
     expect( promiseForDownload.value ).toBe( undefined );
   });
