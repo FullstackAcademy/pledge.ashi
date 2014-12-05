@@ -110,6 +110,7 @@ describe('A promise', function(){
       promiseForNum.then( fn.addToFoo );
       promiseForNum.then( fn.addToFoo );
       expect( fn.addToFoo.calls.count() ).toBe( 2 );
+      expect( fn.addToFoo ).toHaveBeenCalledWith( 25 );
     });
 
     it('calls each success handler in the order added', function(){

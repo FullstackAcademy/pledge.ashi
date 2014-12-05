@@ -67,11 +67,12 @@ describe('Another promise', function(){
     });
 
     it('calls each error handler once per attachment', function(){
+      promiseForThing.then( null, fn.logOops );
+      expect( fn.logOops.calls.count() ).toBe( 1 );
       promiseForThing.then( null, fn.logInput );
-      expect( fn.logInput.calls.count() ).toBe( 1 );
-      promiseForThing.then( null, fn.logOops );
-      promiseForThing.then( null, fn.logOops );
-      expect( fn.logOops.calls.count() ).toBe( 2 );
+      promiseForThing.then( null, fn.logInput );
+      expect( fn.logInput.calls.count() ).toBe( 2 );
+      expect( fn.logInput ).toHaveBeenCalledWith( theReason );
     });
 
     it('calls each error handler in the order added', function(){
