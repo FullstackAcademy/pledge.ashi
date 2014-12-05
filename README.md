@@ -1,4 +1,4 @@
-# Make Me a Promise
+# Make a Promise
 
 ### Build a deferral-style implementation
 
