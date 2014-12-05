@@ -5,9 +5,6 @@ We are going to write a promise library similar to $q & Q,
 called pledge.js. Our promises will be named "$promise" to avoid
 triggering existing browser code. To focus on concepts, pledge.js
 will use many public variables and not be standards-compliant.
-In a stricter deferral system, a promise could not be directly
-tampered with, only manipulated by its parent deferral or
-its .then method.
 
 To execute the spec, run testem in this directory. When you
 pass a test, change the next pending test from 'xit' to 'it'.
@@ -84,11 +81,12 @@ describe('Resolving through a deferral', function(){
 
   // Reminder: common class methods should be defined on a prototype.
 
-  it('(usually) changes its promise state to "resolved"', function(){
+  it('changes its promise state to "resolved"', function(){
     /* NOTE: in strict standards language, a promise that succeeds is
     said to be "fulfilled." Since $q and Q use their .resolve method to
     attempt fullfillment, for simplicity's sake pledge.js will treat
-    fulfillment and resolution as synonyms, though this is non-standard. */
+    fulfillment and resolution as synonyms, though this is non-standard.
+    There are other edge cases, but let's focus on the basics. */
     deferral.resolve();
     expect( promise.state ).toBe( 'resolved' );
   });
@@ -156,8 +154,6 @@ describe('Rejecting through a deferral', function(){
 
 });
 
-// If you properly used the pending status for your "does not affect
-// already resolved/rejected" specs, this should pass already.
 describe('Settled promises never change state:', function(){
 
   var deferral, promise;
@@ -165,6 +161,9 @@ describe('Settled promises never change state:', function(){
     deferral = defer();
     promise  = deferral.$promise;
   });
+
+  // If you used the pending status for your "does not affect
+  // already resolved/rejected" specs, these two specs should pass already.
 
   it('reject does not overwrite resolve', function(){
     deferral.resolve( 'Dumbledore' );
