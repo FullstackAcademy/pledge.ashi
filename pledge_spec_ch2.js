@@ -55,10 +55,18 @@ describe("A promise's .then method", function(){
     expect( promise.updateCbs[1] ).toBe( u2 );
   });
 
-  xit('only attaches functions', function(){
-    promise.then( 'a string', errorCb, 6275309 );
+  xit('attaches a falsy value in place of non-function success or error callbacks', function(){
+    promise.then( 'a string', {} );
     expect( promise.handlerGroups[0].onResolve ).toBeFalsy();
-    expect( promise.handlerGroups[0].onReject  ).toBe( errorCb );
+    expect( promise.handlerGroups[0].onReject ).toBeFalsy();
+  });
+
+  xit("won't bother to attach an update callback if the handler is not a function", function() {
+    promise.then( null, null, 'something' );
+    promise.then( null, null, {} );
+    promise.then( null, null, false );
+    promise.then( null, null, [function() {}] );
+    promise.then( null, null, 12345 );
     expect( promise.updateCbs ).toEqual( [] );
   });
 
