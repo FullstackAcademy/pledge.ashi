@@ -23,6 +23,10 @@ cd make-promise
 
 Then to execute the spec, simply run `testem` in that directory and open the link displayed in your terminal. You will see all the upcoming tests as "pending" (yellow). Start writing your own code in the `pledge.js` file. When you pass a test (green), change the next pending test from `xit` to `it` and save. This spec is iterative and opinionated; it is recommended that you do the tests in order.
 
+## Associated learning materials
+
+The lecture that preceded this workshop is [available in screencast format here.](https://www.youtube.com/watch?v=NWFQtF-MLmA) In addition, the repo contains the lecture slides and a `.then` flowchart, both in PDF format.
+
 ## $q and the state of the art
 
 There are multiple proposed [CommonJS promise standards](http://wiki.commonjs.org/wiki/Promises), one leading standard [Promises/A+](https://www.promisejs.org), and upcoming native [ES6 browser implementations](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). Developers of the [MEAN stack](http://en.wikipedia.org/wiki/MEAN) should become familiar with **[AngularJS's $q service](https://docs.angularjs.org/api/ng/service/$q)**, a lightweight adaptation of [the Q library](https://github.com/kriskowal/q).
