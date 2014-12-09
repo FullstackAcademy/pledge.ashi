@@ -31,9 +31,7 @@ The lecture that preceded this workshop is [available in screencast format here]
 
 There are multiple proposed [CommonJS promise standards](http://wiki.commonjs.org/wiki/Promises), one leading standard [Promises/A+](https://www.promisejs.org), and upcoming native [ES6 browser implementations](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). Developers of the [MEAN stack](http://en.wikipedia.org/wiki/MEAN) should become familiar with **[AngularJS's $q service](https://docs.angularjs.org/api/ng/service/$q)**, a lightweight adaptation of [the Q library](https://github.com/kriskowal/q).
 
-Adding to the potential confusion, `$q` has two possible ways to generate promises: simplified ES6-style constructors, and CommonJS-style **deferreds.** We will study deferreds because they are more explicit and include a useful method, `.notify()`. Also, using `$q` on the front-end and `Q` (which only includes the deferral model) on the backend is a reasonable combination.
-
-If you can grasp the deferral model, the constructor model will be comparatively straightforward.
+Adding to the potential confusion, `$q` has two possible ways to generate promises: simplified ES6-style constructors, and CommonJS-style **deferreds.** We will study deferreds because they are more explicit and include a useful method, `.notify()`. If you can grasp the deferral model, the constructor model will be comparatively straightforward.
 
 ### Warning
 
