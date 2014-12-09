@@ -25,7 +25,7 @@ Then to execute the spec, simply run `testem` in that directory and open the lin
 
 ## Associated learning materials
 
-The lecture that preceded this workshop is [available in screencast format here.](https://www.youtube.com/watch?v=NWFQtF-MLmA) In addition, the repo contains the lecture slides and a `.then` flowchart, both in PDF format.
+The lecture that preceded this workshop is [available in screencast format here](https://www.youtube.com/watch?v=NWFQtF-MLmA). The review session walking through a solution is in two parts [here](http://youtu.be/vLqSh39VOm8) and [here](http://youtu.be/6K8Py8Y-P-c). In addition, the repo contains the lecture slides and a `.then` flowchart, both in PDF format.
 
 ## $q and the state of the art
 
