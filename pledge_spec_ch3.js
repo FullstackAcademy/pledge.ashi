@@ -159,9 +159,9 @@ describe("A promise's .catch(errorFn) method", function(){
   });
 
   /* This spec will probably already pass at this point, because
-  by default all functions return true. However, as you start Ch. 4,
-  it may fail. If that happens, you will have to return here and
-  fix .catch — this time, taking the Ch. 4 specs into account. */
+  by default all functions return undefined. However, as you start
+  Ch. 4, it may fail. If that happens, you will have to return here
+  and fix .catch — this time, taking the Ch. 4 specs into account. */
   xit('returns the same kind of thing that .then would', function(){
     var return1 = promise.catch( myFunc );
     var return2 = promise.then( null, myFunc );
