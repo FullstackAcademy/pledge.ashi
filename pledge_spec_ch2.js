@@ -36,27 +36,27 @@ describe("A promise's .then method", function(){
 
   xit('adds groups of handlers (callback functions) to the promise', function(){
     promise.then( successCb , errorCb, updateCb );
-    expect( promise.handlerGroups[0].onResolve ).toBe( successCb );
-    expect( promise.handlerGroups[0].onReject  ).toBe( errorCb );
+    expect( promise.handlerGroups[0].successCb ).toBe( successCb );
+    expect( promise.handlerGroups[0].errorCb  ).toBe( errorCb );
     // Update callbacks are handled differently from success and error cbs.
     expect( promise.updateCbs[0] ).toBe( updateCb );
   });
 
   xit('can be called multiple times to add more handlers', function(){
     promise.then( successCb , errorCb, updateCb );
-    expect( promise.handlerGroups[0].onResolve ).toBe( successCb );
-    expect( promise.handlerGroups[0].onReject  ).toBe( errorCb );
+    expect( promise.handlerGroups[0].successCb ).toBe( successCb );
+    expect( promise.handlerGroups[0].errorCb  ).toBe( errorCb );
     expect( promise.updateCbs[0] ).toBe( updateCb );
     promise.then( s2, f2, u2 );
-    expect( promise.handlerGroups[1].onResolve ).toBe( s2 );
-    expect( promise.handlerGroups[1].onReject  ).toBe( f2 );
+    expect( promise.handlerGroups[1].successCb ).toBe( s2 );
+    expect( promise.handlerGroups[1].errorCb  ).toBe( f2 );
     expect( promise.updateCbs[1] ).toBe( u2 );
   });
 
   xit('attaches a falsy value in place of non-function success or error callbacks', function(){
     promise.then( 'a string', {} );
-    expect( promise.handlerGroups[0].onResolve ).toBeFalsy();
-    expect( promise.handlerGroups[0].onReject ).toBeFalsy();
+    expect( promise.handlerGroups[0].successCb ).toBeFalsy();
+    expect( promise.handlerGroups[0].errorCb ).toBeFalsy();
   });
 
   xit("won't bother to attach an update callback if the handler is not a function", function() {
