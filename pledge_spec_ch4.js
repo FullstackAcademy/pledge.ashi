@@ -16,8 +16,8 @@ Chapter 4: Promises Can Return Values and Chain Together
 ---------------------------------------------------------
 A crucial aspect of promises is that .then always returns
 a new promise. When values are returned from promise A's
-handler, they bubble out and are represented by the return
-promise B. This leads to amazingly versatile behavior:
+handler, they are exported and represented by the return
+promise B. This leads to remarkably versatile behavior:
 choosing when to catch errors, chaining promises together,
 easily passing around promised values and acting on them
 where convenient… even returning new values.
@@ -37,6 +37,11 @@ describe('For a given promiseA (pA)', function(){
   xit('.then adds a new deferral to its handler group', function(){
     promiseA.then();
     expect( promiseA.handlerGroups[0].forwarder instanceof Deferral ).toBe( true );
+    // each handler group has its own forwarder
+    promiseA.then();
+    expect( promiseA.handlerGroups[1].forwarder instanceof Deferral ).toBe( true );
+    expect( promiseA.handlerGroups[1].forwarder )
+      .not.toBe( promiseA.handlerGroups[0].forwarder );
   });
 
   // Passing this may break your .catch from chapter 3. If that happens,
@@ -66,7 +71,7 @@ describe('For a given promiseA (pA)', function(){
       expect( promiseB.value ).toBe( 'darn' );
     });
 
-    // This is for normal (non-promise) return values
+    // This is for normal (synchronous / non-promise) return values
     xit("if pA's success handler returns a value x, pB is resolved with x", function(){
       var promiseB = promiseA.then( thisReturnsHi );
       deferralA.resolve( 'an ordinary value' );
@@ -74,11 +79,11 @@ describe('For a given promiseA (pA)', function(){
       expect( promiseB.value ).toBe( 'hi' );
     });
 
-    // This is for normal (non-promise) return values
+    // This is for normal (synchronous / non-promise) return values
     xit("if pA's error handler returns a value x, pB is resolved with x", function(){
       /* Why resolved? This is similar to try-catch. If promiseA is
-      rejected (equivalent to try failed), we pass the reason to
-      promiseA's error handler (equivalent to catch). We have now
+      rejected (equivalent to `try` failure), we pass the reason to
+      promiseA's error handler (equivalent to `catch`). We have now
       successfully handled the error, so promiseB should represent
       the error handler returning something useful, not a new error.
       promiseB should only be rejected if the error handler itself
@@ -90,15 +95,15 @@ describe('For a given promiseA (pA)', function(){
     });
 
     // Exceptions cause the returned promise to be rejected with the error.
-    // Hint: you need to know how to use try-catch to make this work.
-    xit("if pA's success handler throws an error e, pB is rejected with e", function(){
+    // Hint: you will need to use `try` & `catch` to make this work.
+    xit("if pA's success handler throws an error `e`, pB is rejected with `e`", function(){
       var promiseB = promiseA.then( thisThrowsErr );
       deferralA.resolve();
       expect( promiseB.state ).toBe( 'rejected' );
       expect( promiseB.value ).toBe( 'err' );
     });
 
-    xit("if pA's error handler throws an error e, pB is rejected with e", function(){
+    xit("if pA's error handler throws an error `e`, pB is rejected with `e`", function(){
       var promiseB = promiseA.catch( thisThrowsErr );
       deferralA.reject();
       expect( promiseB.state ).toBe( 'rejected' );

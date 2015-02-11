@@ -39,8 +39,6 @@ describe("A promise's .then method", function(){
     expect( promise.handlerGroups[0].onResolve ).toBe( successCb );
     expect( promise.handlerGroups[0].onReject  ).toBe( errorCb );
     // Update callbacks are handled differently from success and error cbs.
-    // It may seem odd to put them in a separate array, but trust me:
-    // it will make things easier down the road.
     expect( promise.updateCbs[0] ).toBe( updateCb );
   });
 
@@ -103,7 +101,7 @@ describe('A promise', function(){
       numDeferral.resolve( 25 );
     });
 
-    // Recommended: add a .handle method to your promise prototype.
+    // Recommended: add a .callHandlers method to your promise prototype.
 
     xit('calls a success handler added by .then', function(){
       promiseForNum.then( fn.setFoo10 );
@@ -117,9 +115,9 @@ describe('A promise', function(){
 
     xit('calls each success handler once per attachment', function(){
       promiseForNum.then( fn.setFoo10 );
+      promiseForNum.then( fn.addToFoo );
+      promiseForNum.then( fn.addToFoo );
       expect( fn.setFoo10.calls.count() ).toBe( 1 );
-      promiseForNum.then( fn.addToFoo );
-      promiseForNum.then( fn.addToFoo );
       expect( fn.addToFoo.calls.count() ).toBe( 2 );
       expect( fn.addToFoo ).toHaveBeenCalledWith( 25 );
     });

@@ -51,6 +51,12 @@ describe('Another promise', function(){
       thingDeferral.reject( theReason );
     });
 
+    // if you get "not a function" errors, think carefully about
+    // what happens when you call `.then`. What is getting added
+    // to the `handlerGroups`? What is your code trying to do with
+    // those `handlerGroups`? There is going to have to be some
+    // sort of "safety check" somewhere…
+
     xit('does not call any success handlers', function(){
       promiseForThing.then( fn.logOops );
       expect( fn.logOops ).not.toHaveBeenCalled();
@@ -68,9 +74,9 @@ describe('Another promise', function(){
 
     xit('calls each error handler once per attachment', function(){
       promiseForThing.then( null, fn.logOops );
+      promiseForThing.then( null, fn.logInput );
+      promiseForThing.then( null, fn.logInput );
       expect( fn.logOops.calls.count() ).toBe( 1 );
-      promiseForThing.then( null, fn.logInput );
-      promiseForThing.then( null, fn.logInput );
       expect( fn.logInput.calls.count() ).toBe( 2 );
       expect( fn.logInput ).toHaveBeenCalledWith( theReason );
     });
@@ -106,7 +112,10 @@ describe('Another promise', function(){
 
     var ui;
     beforeEach(function(){
-      ui = { animals: ['kitten', 'puppy'], warning: null };
+      ui = {
+        animals: ['kitten', 'puppy'],
+        warning: null
+      };
 
       promiseForThing.then(
         function thingSuccess (thing) {
@@ -142,7 +151,7 @@ describe('Another promise', function(){
 
 // A quick detour while we are finishing rejections:
 // add a .catch(fn) convenience method to your promise prototype.
-// Hint: the internals of this method can be coded as one short line.
+// The internals of this method can be coded as one short line.
 describe("A promise's .catch(errorFn) method", function(){
 
   var deferral, promise;
@@ -151,7 +160,7 @@ describe("A promise's .catch(errorFn) method", function(){
      promise = deferral.$promise;
      spyOn( promise, 'then' ).and.callThrough();
   });
-  function myFunc (reason) { console.log(reason) }
+  function myFunc (reason) { console.log(reason); }
 
   xit('attaches errorFn as an error handler', function(){
     promise.catch( myFunc );
@@ -160,7 +169,7 @@ describe("A promise's .catch(errorFn) method", function(){
 
   /* This spec will probably already pass at this point, because
   by default all functions return undefined. However, as you start
-  Ch. 4, it may fail. If that happens, you will have to return here
+  Ch. 4, this may fail. If that happens, you will have to return here
   and fix .catch — this time, taking the Ch. 4 specs into account. */
   xit('returns the same kind of thing that .then would', function(){
     var return1 = promise.catch( myFunc );
@@ -215,7 +224,7 @@ describe("A deferral's .notify method", function(){
     promiseForDownload.then(null, null, fn.setLoadingBar);
     downloadDeferral.notify( 50 );
     expect( fn.setLoadingBar ).toHaveBeenCalledWith( 50 );
-    downloadDeferral.resolve( 'abcdefghijklmnopqrstuvwxyz1234567890' );
+    downloadDeferral.resolve( 'now I am resolved' );
     downloadDeferral.notify( 75 );
     expect( fn.setLoadingBar ).not.toHaveBeenCalledWith( 75 );
     expect( fn.setLoadingBar.calls.count() ).toBe( 1 );
