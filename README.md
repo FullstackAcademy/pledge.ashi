@@ -25,11 +25,11 @@ Then to execute the spec, simply run `testem` in that directory and open the lin
 
 ## Associated learning materials
 
-The lecture that preceded this workshop is [available in screencast format here](https://www.youtube.com/watch?v=NWFQtF-MLmA). The review session walking through a solution is in two parts [here](http://youtu.be/vLqSh39VOm8) and [here](http://youtu.be/6K8Py8Y-P-c). In addition, the repo contains the lecture slides and a `.then` flowchart, both in PDF format.
+The repo contains the lecture slides and a `.then` flowchart, both in PDF format.
 
 ## $q and the state of the art
 
-There are multiple proposed [CommonJS promise standards](http://wiki.commonjs.org/wiki/Promises), one leading standard [Promises/A+](https://www.promisejs.org), and upcoming native [ES6 browser implementations](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). Developers of the [MEAN stack](http://en.wikipedia.org/wiki/MEAN) should become familiar with **[AngularJS's $q service](https://docs.angularjs.org/api/ng/service/$q)**, a lightweight adaptation of [the Q library](https://github.com/kriskowal/q).
+There are multiple proposed [CommonJS promise standards](http://wiki.commonjs.org/wiki/Promises), one leading standard [Promises/A+](https://www.promisejs.org), and upcoming native [ES6 browser implementations](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). Developers of the [MEAN stack](http://en.wikipedia.org/wiki/MEAN) should become familiar with **[AngularJS's $q service](https://docs.angularjs.org/api/ng/service/$q)**, a lightweight adaptation of [the Q library](https://github.com/kriskowal/q). [Bluebird](https://github.com/petkaantonov/bluebird) is also making waves as a highly-performant and powerful library.
 
 Adding to the potential confusion, `$q` has two possible ways to generate promises: simplified ES6-style constructors, and CommonJS-style **deferreds.** We will study deferreds because they are more explicit and include a useful method, `.notify()`. If you can grasp the deferral model, the constructor model will be comparatively straightforward.
 
@@ -59,3 +59,5 @@ These and other technical details are important, but for someone just beginning 
 * [DailyJS: Javascript Promises in Wicked Detail](http://dailyjs.com/2014/02/20/promises-in-detail/) (build an ES6-style implementation)
 * [MDN: ES6 Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) (upcoming native functions)
 * [Promise Nuggets](http://spion.github.io/promise-nuggets/) (use patterns)
+* [Promise Anti-Patterns](http://taoofcode.net/promise-anti-patterns/)
+* [AngularJS / UI Router / Resolve](http://www.jvandemo.com/how-to-resolve-angularjs-resources-with-ui-router/)
