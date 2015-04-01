@@ -1,4 +1,4 @@
-describe('Chapter 4',function(){});
+describe('Chapter 4: Promise Chaining and Transformation',function(){});
 /*=======================================================
 
 
@@ -160,5 +160,6 @@ describe('For a given promiseA (pA)', function(){
 Wow! If you got this far, congratulations. We omitted certain
 details (e.g. handlers must always be called in a true async
 wrapper), but you have built a promise library with most of
-the standard behavior.
+the standard behavior. In the next (optional) chapter, we'll
+be adding in some relatively nonstandard behavior — notifiers.
 */

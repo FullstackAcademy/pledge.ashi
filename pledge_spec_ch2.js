@@ -1,4 +1,4 @@
-describe('Chapter 2',function(){});
+describe('Chapter 2: Fulfillment Callback Attachment',function(){});
 /*======================================================
 
 
@@ -29,43 +29,28 @@ describe("A promise's .then method", function(){
   });
   function successCb (data)   { /* use data */ }
   function errorCb   (reason) { /* handle reason */ }
-  function updateCb  (info)   { /* act on info */ }
   function s2 (d) { /* use d */ }
-  function f2 (r) { /* handle r */ }
-  function u2 (i) { /* act on i */ }
+  function e2 (r) { /* handle r */ }
 
   xit('adds groups of handlers (callback functions) to the promise', function(){
-    promise.then( successCb , errorCb, updateCb );
+    promise.then( successCb, errorCb );
     expect( promise.handlerGroups[0].successCb ).toBe( successCb );
-    expect( promise.handlerGroups[0].errorCb  ).toBe( errorCb );
-    // Update callbacks are handled differently from success and error cbs.
-    expect( promise.updateCbs[0] ).toBe( updateCb );
+    expect( promise.handlerGroups[0].errorCb   ).toBe( errorCb );
   });
 
   xit('can be called multiple times to add more handlers', function(){
-    promise.then( successCb , errorCb, updateCb );
+    promise.then( successCb, errorCb );
     expect( promise.handlerGroups[0].successCb ).toBe( successCb );
-    expect( promise.handlerGroups[0].errorCb  ).toBe( errorCb );
-    expect( promise.updateCbs[0] ).toBe( updateCb );
-    promise.then( s2, f2, u2 );
+    expect( promise.handlerGroups[0].errorCb   ).toBe( errorCb );
+    promise.then( s2, e2 );
     expect( promise.handlerGroups[1].successCb ).toBe( s2 );
-    expect( promise.handlerGroups[1].errorCb  ).toBe( f2 );
-    expect( promise.updateCbs[1] ).toBe( u2 );
+    expect( promise.handlerGroups[1].errorCb   ).toBe( e2 );
   });
 
   xit('attaches a falsy value in place of non-function success or error callbacks', function(){
     promise.then( 'a string', {} );
     expect( promise.handlerGroups[0].successCb ).toBeFalsy();
-    expect( promise.handlerGroups[0].errorCb ).toBeFalsy();
-  });
-
-  xit("won't bother to attach an update callback if the handler is not a function", function() {
-    promise.then( null, null, 'something' );
-    promise.then( null, null, {} );
-    promise.then( null, null, false );
-    promise.then( null, null, [function() {}] );
-    promise.then( null, null, 12345 );
-    expect( promise.updateCbs ).toEqual( [] );
+    expect( promise.handlerGroups[0].errorCb   ).toBeFalsy();
   });
 
 });

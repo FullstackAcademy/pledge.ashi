@@ -11,7 +11,7 @@ pass a test, change the next pending test from 'xit' to 'it'.
 This spec is iterative and opinionated; do the tests in order.
 --------------------------------------------------------*/
 
-describe('Chapter 1',function(){});
+describe('Chapter 1: Structure and State',function(){});
 /*======================================================
 
 

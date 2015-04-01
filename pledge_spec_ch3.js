@@ -1,4 +1,4 @@
-describe('Chapter 3',function(){});
+describe('Chapter 3: Rejection Callback Attachment',function(){});
 /*=======================================================
 
 
@@ -12,12 +12,11 @@ describe('Chapter 3',function(){});
                          "Y8888P"
 
 
-Chapter 3: Completing the Handlers: Rejection & Notification
+Chapter 3: Completing the Handlers: Rejection & Catch
 ---------------------------------------------------------
 With .resolve sending and .then acting on data, we have
-a major part of promises working. Rejection is similar,
-but notification is a little different. Finish up the
-"callback aggregation" aspect of promises in this chapter.
+a major part of promises working. Rejection is similar;
+finish the "callback aggregation" of promises in this chapter.
 ========================================================*/
 
 describe('Another promise', function(){
@@ -179,72 +178,10 @@ describe("A promise's .catch(errorFn) method", function(){
 
 });
 
-// The .notify method is slightly different:
-describe("A deferral's .notify method", function(){
-
-  var fn, downloadDeferral, promiseForDownload;
-  fn = {
-    setLoadingBar: function (num) { /* update the loading bar */ },
-  };
-  beforeEach(function(){
-    downloadDeferral = defer();
-    promiseForDownload = downloadDeferral.$promise;
-    spyOn( fn, 'setLoadingBar' ).and.callThrough();
-  });
-
-  xit("calls a promise's update handler attached via .then", function(){
-    promiseForDownload.then(null, null, fn.setLoadingBar);
-    expect( fn.setLoadingBar ).not.toHaveBeenCalled();
-    downloadDeferral.notify();
-    expect( fn.setLoadingBar ).toHaveBeenCalled();
-  });
-
-  xit('calls an update handler with some information', function(){
-    promiseForDownload.then(null, null, fn.setLoadingBar);
-    expect( fn.setLoadingBar ).not.toHaveBeenCalled();
-    downloadDeferral.notify( 17 );
-    expect( fn.setLoadingBar ).toHaveBeenCalledWith( 17 );
-  });
-
-  xit("never affects the promise's value", function(){
-    promiseForDownload.then( fn.setLoadingBar );
-    downloadDeferral.notify( 50 );
-    expect( promiseForDownload.value ).toBe( undefined );
-  });
-
-  xit('calls all attached update handlers once per attachment', function(){
-    promiseForDownload.then(null, null, fn.setLoadingBar);
-    promiseForDownload.then(null, null, fn.setLoadingBar);
-    expect( fn.setLoadingBar ).not.toHaveBeenCalled();
-    downloadDeferral.notify();
-    expect( fn.setLoadingBar.calls.count() ).toBe( 2 );
-  });
-
-  xit('only works while the promise is pending', function(){
-    promiseForDownload.then(null, null, fn.setLoadingBar);
-    downloadDeferral.notify( 50 );
-    expect( fn.setLoadingBar ).toHaveBeenCalledWith( 50 );
-    downloadDeferral.resolve( 'now I am resolved' );
-    downloadDeferral.notify( 75 );
-    expect( fn.setLoadingBar ).not.toHaveBeenCalledWith( 75 );
-    expect( fn.setLoadingBar.calls.count() ).toBe( 1 );
-  });
-
-  xit('can be called multiple times before resolution/rejection', function(){
-    promiseForDownload.then(null, null, fn.setLoadingBar);
-    downloadDeferral.notify( 12 );
-    expect( fn.setLoadingBar.calls.count() ).toBe( 1 );
-    downloadDeferral.notify( 38 );
-    expect( fn.setLoadingBar.calls.count() ).toBe( 2 );
-    downloadDeferral.reject( 'corrupted data' );
-    downloadDeferral.notify( 54 );
-    expect( fn.setLoadingBar.calls.count() ).toBe( 2 );
-  });
-
-});
-
 /*
 That finishes the attachment and triggering of our handlers!
 In the next chapter, we will dive deeply into how .then
-chaining actually works.
+chaining actually works. This behavior is what drives promises
+beyond being just portable callback sinks and transforms them
+into dynamic, versatile, powerful, manipulatable machines.
 */
