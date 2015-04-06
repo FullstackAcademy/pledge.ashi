@@ -107,11 +107,11 @@ describe('Resolving through a deferral', function(){
   });
 
   xit('works even with falsey values', function(){
-    var data1 = null;
+    var data1; // undefined; could also work with null, 0, false, etc.
     var data2 = 'oops!';
     deferral.resolve( data1 );
     deferral.resolve( data2 );
-    expect( promise.value ).toBe( data1 );
+    expect( promise.value ).not.toBe( data2 );
   });
 
 });
@@ -145,11 +145,11 @@ describe('Rejecting through a deferral', function(){
   });
 
   xit('works even with falsey values', function(){
-    var reason1 = null;
+    var reason1; // undefined; could also work with null, 0, false, etc.
     var reason2 = 'oops!';
     deferral.reject( reason1 );
     deferral.reject( reason2 );
-    expect( promise.value ).toBe( reason1 );
+    expect( promise.value ).not.toBe( reason2 );
   });
 
 });
