@@ -1,3 +1,4 @@
+'use strict';
 /*----------------------------------------------------------------
 Promises Workshop: build the pledge.js deferral-style promise library
 ----------------------------------------------------------------*/
