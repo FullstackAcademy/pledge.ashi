@@ -1,6 +1,6 @@
-# Make a Promise
+# Pledge.js
 
-### Build a deferral-style implementation
+### Make a promise: build a deferral-style implementation
 
 **Javascript promises** are versatile tools for managing asynchronous results. They are portable and can attach handler functions to an eventual value, in multiple places. Compared to the dead end of standard async callbacks, they restore normal control flow — letting you chain results, `return` new values, and `catch` errors where most convenient.
 
@@ -50,14 +50,27 @@ These and other technical details are important, but for someone just beginning 
 
 ## External Resources for Further Reading
 
-* [AngularJS documentation for $q](https://docs.angularjs.org/api/ng/service/$q)
-* [Kris Kowal & Domenic Denicola: Q](https://github.com/kriskowal/q) (the library $q mimics; great examples & resources)
+### Canon
+
+* [MDN: ES6 Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) (native functions)
 * [The Promises/A+ Standard](https://www.promisejs.org) (with use patterns and an example implementation)
+
+### General
+
 * [HTML5 Rocks: Promises](http://www.html5rocks.com/en/tutorials/es6/promises/) (deep walkthrough with use patterns)
-* [Xebia: Promises and Design Patterns in AngularJS](http://blog.xebia.com/2014/02/23/promises-and-design-patterns-in-angularjs/)
-* [AngularJS Corner: Using promises and $q to handle asynchronous calls](http://chariotsolutions.com/blog/post/angularjs-corner-using-promises-q-handle-asynchronous-calls/)
+* [Nolan Lawson: We Have a Problem with Promises](http://pouchdb.com/2015/05/18/we-have-a-problem-with-promises.html)
 * [DailyJS: Javascript Promises in Wicked Detail](http://dailyjs.com/2014/02/20/promises-in-detail/) (build an ES6-style implementation)
-* [MDN: ES6 Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) (upcoming native functions)
 * [Promise Nuggets](http://spion.github.io/promise-nuggets/) (use patterns)
 * [Promise Anti-Patterns](http://taoofcode.net/promise-anti-patterns/)
+
+### Libraries
+
+* [Kris Kowal & Domenic Denicola: Q](https://github.com/kriskowal/q) (the library Angular's $q mimics; great examples & resources)
+* [Bluebird](http://bluebirdjs.com) (the current favorite for speed & features among many JS developers)
+
+### Angular and Related
+
+* [AngularJS documentation for $q](https://docs.angularjs.org/api/ng/service/$q)
+* [AngularJS Corner: Using promises and $q to handle asynchronous calls](http://chariotsolutions.com/blog/post/angularjs-corner-using-promises-q-handle-asynchronous-calls/)
+* [Xebia: Promises and Design Patterns in AngularJS](http://blog.xebia.com/2014/02/23/promises-and-design-patterns-in-angularjs/)
 * [AngularJS / UI Router / Resolve](http://www.jvandemo.com/how-to-resolve-angularjs-resources-with-ui-router/)
