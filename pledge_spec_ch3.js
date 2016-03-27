@@ -21,24 +21,26 @@ finish the "callback aggregation" of promises in this chapter.
 
 describe('Another promise', function(){
 
-  var fn, thingDeferral, promiseForThing, log;
-  fn = {
-    logOops: function () { log.push({ code: 'oops' }); },
-    logInput: function (input) { log.push( input ); }
-  };
+  var thingDeferral, promiseForThing, log;
+  var logOops = jasmine.createSpy().and.callFake(function () {
+    log.push({ code: 'oops' });
+  });
+  var logInput = jasmine.createSpy().and.callFake(function (input) {
+    log.push( input );
+  });
   beforeEach(function(){
     thingDeferral = defer();
     promiseForThing = thingDeferral.$promise;
     log = [];
-    spyOn( fn, 'logOops' ).and.callThrough();
-    spyOn( fn, 'logInput' ).and.callThrough();
+    logOops.calls.reset();
+    logInput.calls.reset();
   });
 
   describe('that is not yet rejected', function(){
 
     xit('does not call error handlers yet', function(){
-      promiseForThing.then( null, fn.logOops );
-      expect( fn.logOops ).not.toHaveBeenCalled();
+      promiseForThing.then( null, logOops );
+      expect( logOops ).not.toHaveBeenCalled();
     });
 
   });
@@ -57,32 +59,32 @@ describe('Another promise', function(){
     // sort of "safety check" somewhere…
 
     xit('does not call any success handlers', function(){
-      promiseForThing.then( fn.logOops );
-      expect( fn.logOops ).not.toHaveBeenCalled();
+      promiseForThing.then( logOops );
+      expect( logOops ).not.toHaveBeenCalled();
     });
 
     xit('calls an error handler added by .then', function(){
-      promiseForThing.then( null, fn.logOops );
-      expect( fn.logOops ).toHaveBeenCalled();
+      promiseForThing.then( null, logOops );
+      expect( logOops ).toHaveBeenCalled();
     });
 
     xit("calls an error handler by passing in the promise's value", function(){
-      promiseForThing.then( null, fn.logInput );
-      expect( fn.logInput ).toHaveBeenCalledWith( theReason );
+      promiseForThing.then( null, logInput );
+      expect( logInput ).toHaveBeenCalledWith( theReason );
     });
 
     xit('calls each error handler once per attachment', function(){
-      promiseForThing.then( null, fn.logOops );
-      promiseForThing.then( null, fn.logInput );
-      promiseForThing.then( null, fn.logInput );
-      expect( fn.logOops.calls.count() ).toBe( 1 );
-      expect( fn.logInput.calls.count() ).toBe( 2 );
-      expect( fn.logInput ).toHaveBeenCalledWith( theReason );
+      promiseForThing.then( null, logOops );
+      promiseForThing.then( null, logInput );
+      promiseForThing.then( null, logInput );
+      expect( logOops.calls.count() ).toBe( 1 );
+      expect( logInput.calls.count() ).toBe( 2 );
+      expect( logInput ).toHaveBeenCalledWith( theReason );
     });
 
     xit('calls each error handler in the order added', function(){
-      promiseForThing.then( null, fn.logOops );
-      promiseForThing.then( null, fn.logInput );
+      promiseForThing.then( null, logOops );
+      promiseForThing.then( null, logInput );
       expect( log ).toEqual( [{ code: 'oops'}, {code: 'timed out'}] );
     });
 
@@ -93,14 +95,14 @@ describe('Another promise', function(){
     var theReason = { code: 'unauthorized' };
 
     xit('calls that handler when rejected', function(){
-      promiseForThing.then( null, fn.logInput );
+      promiseForThing.then( null, logInput );
       thingDeferral.reject( theReason );
-      expect( fn.logInput ).toHaveBeenCalledWith( theReason );
+      expect( logInput ).toHaveBeenCalledWith( theReason );
     });
 
     xit('calls all its error handlers in order one time when rejected', function(){
-      promiseForThing.then( null, fn.logInput );
-      promiseForThing.then( null, fn.logOops );
+      promiseForThing.then( null, logInput );
+      promiseForThing.then( null, logOops );
       thingDeferral.reject( theReason );
       expect( log ).toEqual( [{code: 'unauthorized'}, {code: 'oops'}] );
     });

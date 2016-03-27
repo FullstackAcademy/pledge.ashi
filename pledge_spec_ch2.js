@@ -27,21 +27,21 @@ describe("A promise's .then method", function(){
     deferral = defer();
     promise  = deferral.$promise;
   });
-  function successCb (data)   { /* use data */ }
-  function errorCb   (reason) { /* handle reason */ }
+  function s1 (data)   { /* use data */ }
+  function e1 (reason) { /* handle reason */ }
   function s2 (d) { /* use d */ }
   function e2 (r) { /* handle r */ }
 
   xit('adds groups of handlers (callback functions) to the promise', function(){
-    promise.then( successCb, errorCb );
-    expect( promise.handlerGroups[0].successCb ).toBe( successCb );
-    expect( promise.handlerGroups[0].errorCb   ).toBe( errorCb );
+    promise.then( s1, e1 );
+    expect( promise.handlerGroups[0].successCb ).toBe( s1 );
+    expect( promise.handlerGroups[0].errorCb   ).toBe( e1 );
   });
 
   xit('can be called multiple times to add more handlers', function(){
-    promise.then( successCb, errorCb );
-    expect( promise.handlerGroups[0].successCb ).toBe( successCb );
-    expect( promise.handlerGroups[0].errorCb   ).toBe( errorCb );
+    promise.then( s1, e1 );
+    expect( promise.handlerGroups[0].successCb ).toBe( s1 );
+    expect( promise.handlerGroups[0].errorCb   ).toBe( e1 );
     promise.then( s2, e2 );
     expect( promise.handlerGroups[1].successCb ).toBe( s2 );
     expect( promise.handlerGroups[1].errorCb   ).toBe( e2 );
@@ -58,24 +58,22 @@ describe("A promise's .then method", function(){
 // Getting to the main functionality
 describe('A promise', function(){
 
-  var fn, numDeferral, promiseForNum, foo;
-  fn = {
-    setFoo10: function () { foo = 10; },
-    addToFoo: function (num) { foo += num; }
-  };
+  var numDeferral, promiseForNum, foo;
+  var setFoo10 = jasmine.createSpy().and.callFake(function () { foo = 10; });
+  var addToFoo = jasmine.createSpy().and.callFake(function (num) { foo += num; });
   beforeEach(function(){
     numDeferral = defer();
     promiseForNum = numDeferral.$promise;
     foo = 0;
-    spyOn( fn, 'setFoo10' ).and.callThrough();
-    spyOn( fn, 'addToFoo' ).and.callThrough();
+    setFoo10.calls.reset();
+    addToFoo.calls.reset();
   });
 
   describe('that is not yet resolved', function(){
 
     xit('does not call any success handlers yet', function(){
-      promiseForNum.then( fn.setFoo10 );
-      expect( fn.setFoo10 ).not.toHaveBeenCalled();
+      promiseForNum.then( setFoo10 );
+      expect( setFoo10 ).not.toHaveBeenCalled();
     });
 
   });
@@ -89,28 +87,28 @@ describe('A promise', function(){
     // Recommended: add a .callHandlers method to your promise prototype.
 
     xit('calls a success handler added by .then', function(){
-      promiseForNum.then( fn.setFoo10 );
-      expect( fn.setFoo10 ).toHaveBeenCalled();
+      promiseForNum.then( setFoo10 );
+      expect( setFoo10 ).toHaveBeenCalled();
     });
 
     xit("calls a success handler by passing in the promise's value", function(){
-      promiseForNum.then( fn.addToFoo );
-      expect( fn.addToFoo ).toHaveBeenCalledWith( 25 );
+      promiseForNum.then( addToFoo );
+      expect( addToFoo ).toHaveBeenCalledWith( 25 );
     });
 
     xit('calls each success handler once per attachment', function(){
-      promiseForNum.then( fn.setFoo10 );
-      promiseForNum.then( fn.addToFoo );
-      promiseForNum.then( fn.addToFoo );
-      expect( fn.setFoo10.calls.count() ).toBe( 1 );
-      expect( fn.addToFoo.calls.count() ).toBe( 2 );
-      expect( fn.addToFoo ).toHaveBeenCalledWith( 25 );
+      promiseForNum.then( setFoo10 );
+      promiseForNum.then( addToFoo );
+      promiseForNum.then( addToFoo );
+      expect( setFoo10.calls.count() ).toBe( 1 );
+      expect( addToFoo.calls.count() ).toBe( 2 );
+      expect( addToFoo ).toHaveBeenCalledWith( 25 );
     });
 
     xit('calls each success handler when added', function(){
-      promiseForNum.then( fn.setFoo10 );
+      promiseForNum.then( setFoo10 );
       expect( foo ).toBe( 10 );
-      promiseForNum.then( fn.addToFoo );
+      promiseForNum.then( addToFoo );
       expect( foo ).toBe( 35 );
     });
 
@@ -121,14 +119,14 @@ describe('A promise', function(){
   describe('that already has a success handler', function(){
 
     xit('calls that handler when resolved', function(){
-      promiseForNum.then( fn.setFoo10 );
+      promiseForNum.then( setFoo10 );
       numDeferral.resolve();
-      expect( fn.setFoo10 ).toHaveBeenCalled();
+      expect( setFoo10 ).toHaveBeenCalled();
     });
 
     xit('calls all its success handlers in order one time when resolved', function(){
-      promiseForNum.then( fn.setFoo10 );
-      promiseForNum.then( fn.addToFoo );
+      promiseForNum.then( setFoo10 );
+      promiseForNum.then( addToFoo );
       numDeferral.resolve( 25 );
       expect( foo ).toBe( 35 );
     });
