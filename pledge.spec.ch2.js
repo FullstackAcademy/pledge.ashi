@@ -1,4 +1,4 @@
-describe('Chapter 2: Fulfillment Callback Attachment',function(){});
+describe('Chapter 2: Fulfillment Callback Attachment', function(){});
 /*======================================================
 
 
@@ -20,6 +20,9 @@ used? By completing this chapter, you will learn the
 fundamentals of how promises act on eventual information.
 ========================================================*/
 
+/* global defer */
+/* eslint no-unused-vars: 0 */
+
 describe("A promise's .then method", function(){
 
   var deferral, promise;
@@ -29,8 +32,8 @@ describe("A promise's .then method", function(){
   });
   function s1 (data)   { /* use data */ }
   function e1 (reason) { /* handle reason */ }
-  function s2 (d) { /* use d */ }
-  function e2 (r) { /* handle r */ }
+  function s2 (data)   { /* use data */ }
+  function e2 (reason) { /* handle reason */ }
 
   xit('adds groups of handlers (callback functions) to the promise', function(){
     promise.then( s1, e1 );

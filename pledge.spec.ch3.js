@@ -1,4 +1,4 @@
-describe('Chapter 3: Rejection Callback Attachment',function(){});
+describe('Chapter 3: Rejection Callback Attachment', function(){});
 /*=======================================================
 
 
@@ -18,6 +18,8 @@ With .resolve sending and .then acting on data, we have
 a major part of promises working. Rejection is similar;
 finish the "callback aggregation" of promises in this chapter.
 ========================================================*/
+
+/* global defer */
 
 describe('Another promise', function(){
 

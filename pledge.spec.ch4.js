@@ -1,4 +1,4 @@
-describe('Chapter 4: Promise Chaining and Transformation',function(){});
+describe('Chapter 4: Promise Chaining and Transformation', function(){});
 /*=======================================================
 
 
@@ -23,6 +23,9 @@ easily passing around promised values and acting on them
 where convenient… even returning new values.
 This chapter may be challenging.
 ========================================================*/
+
+/* global Deferral defer */
+/* eslint no-throw-literal: 0 */
 
 describe('For a given promiseA (pA)', function(){
 
@@ -145,7 +148,11 @@ describe('For a given promiseA (pA)', function(){
   xit('.then can be chained many times', function(){
     var add1 = function (num) { return ++num; };
     var test = 0;
-    promiseA.then( add1 ).then( add1 ).then().then( function (data) {
+    promiseA
+    .then(add1)
+    .then(add1)
+    .then()
+    .then(function (data) {
       test = data;
     });
     deferralA.resolve( 0 );

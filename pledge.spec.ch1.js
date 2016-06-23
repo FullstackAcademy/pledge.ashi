@@ -11,7 +11,7 @@ pass a test, change the next pending test from 'xit' to 'it'.
 This spec is iterative and opinionated; do the tests in order.
 --------------------------------------------------------*/
 
-describe('Chapter 1: Structure and State',function(){});
+describe('Chapter 1: Structure and State', function(){});
 /*======================================================
 
 
@@ -31,6 +31,8 @@ We are going to start with some essential pieces and begin
 to define how a deferral is related to a promise. This should
 not be too difficult.
 ========================================================*/
+
+/* global Deferral $Promise defer */
 
 describe('The pledge.js library', function(){
 

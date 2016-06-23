@@ -1,4 +1,4 @@
-describe('Chapter 5: Notification Handlers',function(){});
+describe('Chapter 5: Notification Handlers', function(){});
 /*=======================================================
 
                         cuuu....uK
@@ -25,6 +25,9 @@ promises at all. If you want to understand more, however,
 this chapter will implement a basic notification system.
 ========================================================*/
 
+/* global defer */
+/* eslint no-unused-vars: 0 */
+
 describe("A promise's .then method", function(){
 
   var deferral, promise;
@@ -33,7 +36,7 @@ describe("A promise's .then method", function(){
     promise  = deferral.$promise;
   });
   function updateCb (info) { /* act on info */ }
-  function u2 (i) { /* act on i */ }
+  function u2 (info) { /* act on info */ }
 
   xit('adds update handlers to the promise', function(){
     promise.then( null, null, updateCb );
