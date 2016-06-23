@@ -1,4 +1,4 @@
-describe('Chapter 2: Fulfillment Callback Attachment', function(){});
+('Chapter 2: Fulfillment Callback Attachment', function(){});
 /*======================================================
 
 
@@ -62,8 +62,8 @@ describe("A promise's .then method", function(){
 describe('A promise', function(){
 
   var numDeferral, promiseForNum, foo;
-  var setFoo10 = jasmine.createSpy().and.callFake(function () { foo = 10; });
-  var addToFoo = jasmine.createSpy().and.callFake(function (num) { foo += num; });
+  var setFoo10 = jasmine.createSpy('setFoo10').and.callFake(function () { foo = 10; });
+  var addToFoo = jasmine.createSpy('addToFoo').and.callFake(function (num) { foo += num; });
   beforeEach(function(){
     numDeferral = defer();
     promiseForNum = numDeferral.$promise;

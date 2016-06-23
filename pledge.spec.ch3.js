@@ -24,10 +24,10 @@ finish the "callback aggregation" of promises in this chapter.
 describe('Another promise', function(){
 
   var thingDeferral, promiseForThing, log;
-  var logOops = jasmine.createSpy().and.callFake(function () {
+  var logOops = jasmine.createSpy('logOops').and.callFake(function () {
     log.push({ code: 'oops' });
   });
-  var logInput = jasmine.createSpy().and.callFake(function (input) {
+  var logInput = jasmine.createSpy('logInput').and.callFake(function (input) {
     log.push( input );
   });
   beforeEach(function(){
