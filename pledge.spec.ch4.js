@@ -39,19 +39,19 @@ describe('For a given promiseA (pA)', function(){
 
   xit('.then adds a new deferral to its handler group', function(){
     promiseA.then();
-    expect( promiseA.handlerGroups[0].forwarder instanceof Deferral ).toBe( true );
-    // each handler group has its own forwarder
+    expect( promiseA.handlerGroups[0].downstream instanceof Deferral ).toBe( true );
+    // each handler group has its own downstream
     promiseA.then();
-    expect( promiseA.handlerGroups[1].forwarder instanceof Deferral ).toBe( true );
-    expect( promiseA.handlerGroups[1].forwarder )
-      .not.toBe( promiseA.handlerGroups[0].forwarder );
+    expect( promiseA.handlerGroups[1].downstream instanceof Deferral ).toBe( true );
+    expect( promiseA.handlerGroups[1].downstream )
+      .not.toBe( promiseA.handlerGroups[0].downstream );
   });
 
   // Passing this may break your .catch from chapter 3. If that happens,
   // you will have to go back and fix .catch, taking this spec into account.
   xit('.then returns the promise from that deferral', function(){
     var promiseB = promiseA.then();
-    expect( promiseB ).toBe( promiseA.handlerGroups[0].forwarder.$promise );
+    expect( promiseB ).toBe( promiseA.handlerGroups[0].downstream.$promise );
   });
 
   describe('that returns promiseB (pB) via .then:', function(){
