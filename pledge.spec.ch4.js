@@ -116,8 +116,8 @@ describe('For a given promiseA (pA)', function(){
     /* What if promiseA returns a promiseZ? You could handle pZ like a
     normal value, but then you have to start writing .then inside .then.
     Instead, we want to make promiseB to "become" pZ by copying
-    pZ's behavior — aka assimilation. This test is a brain-bender. */
-    xit("if pA's success handler returns promiseZ, pB mimics pZ", function(){
+    pZ's behavior — aka assimilation. These four tests are brain-benders. */
+    xit("if pA's success handler returns promiseZ which fulfills, pB mimics pZ", function(){
       var deferralZ = defer();
       var promiseZ = deferralZ.$promise;
       var promiseB = promiseA.then(function(){
@@ -126,9 +126,10 @@ describe('For a given promiseA (pA)', function(){
       deferralA.resolve();
       deferralZ.resolve( 'testing' );
       expect( promiseB.value ).toBe( 'testing' );
+      expect( promiseB.state ).toBe( 'resolved' );
     });
 
-    xit("if pA's error handler returns promiseZ, pB mimics pZ", function(){
+    xit("if pA's error handler returns promiseZ which fulfills, pB mimics pZ", function(){
       var deferralZ = defer();
       var promiseZ = deferralZ.$promise;
       var promiseB = promiseA.catch(function(){
@@ -137,6 +138,31 @@ describe('For a given promiseA (pA)', function(){
       deferralA.reject();
       deferralZ.resolve( 'testing' );
       expect( promiseB.value ).toBe( 'testing' );
+      expect( promiseB.state ).toBe( 'resolved' );
+    });
+
+    xit("if pA's success handler returns promiseZ which rejects, pB mimics pZ", function(){
+      var deferralZ = defer();
+      var promiseZ = deferralZ.$promise;
+      var promiseB = promiseA.then(function(){
+        return promiseZ;
+      });
+      deferralA.resolve();
+      deferralZ.reject( 'testing' );
+      expect( promiseB.value ).toBe( 'testing' );
+      expect( promiseB.state ).toBe( 'rejected' );
+    });
+
+    xit("if pA's error handler returns promiseZ which rejects, pB mimics pZ", function(){
+      var deferralZ = defer();
+      var promiseZ = deferralZ.$promise;
+      var promiseB = promiseA.catch(function(){
+        return promiseZ;
+      });
+      deferralA.reject();
+      deferralZ.reject( 'testing' );
+      expect( promiseB.value ).toBe( 'testing' );
+      expect( promiseB.state ).toBe( 'rejected' );
     });
 
     // To really test assimilation properly would require many more specs.
