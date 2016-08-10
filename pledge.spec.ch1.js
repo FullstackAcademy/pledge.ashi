@@ -67,7 +67,7 @@ describe("A deferral's associated promise", function(){
   xit('starts with "pending" state', function(){
     var deferral = defer();
     var promise = deferral.$promise;
-    expect( promise.state ).toBe( 'pending' );
+    expect( promise._state ).toBe( 'pending' );
   });
 
 });
@@ -90,13 +90,13 @@ describe('Resolving through a deferral', function(){
     fulfillment and resolution as synonyms, though this is non-standard.
     There are other edge cases, but let's focus on the basics. */
     deferral.resolve();
-    expect( promise.state ).toBe( 'resolved' );
+    expect( promise._state ).toBe( 'resolved' );
   });
 
   xit('can send data to the promise for storage', function(){
     var someData = { name: 'Harry Potter' };
     deferral.resolve( someData );
-    expect( promise.value ).toBe( someData );
+    expect( promise._value ).toBe( someData );
   });
 
   // Hint: use the pending status.
@@ -105,7 +105,7 @@ describe('Resolving through a deferral', function(){
     var data2 = { name: 'Gandalf' };
     deferral.resolve( data1 );
     deferral.resolve( data2 );
-    expect( promise.value ).toBe( data1 );
+    expect( promise._value ).toBe( data1 );
   });
 
   xit('works even with falsey values', function(){
@@ -113,7 +113,7 @@ describe('Resolving through a deferral', function(){
     var data2 = 'oops!';
     deferral.resolve( data1 );
     deferral.resolve( data2 );
-    expect( promise.value ).not.toBe( data2 );
+    expect( promise._value ).not.toBe( data2 );
   });
 
 });
@@ -128,13 +128,13 @@ describe('Rejecting through a deferral', function(){
 
   xit('changes its promise state to "rejected"', function(){
     deferral.reject();
-    expect( promise.state ).toBe( 'rejected' );
+    expect( promise._state ).toBe( 'rejected' );
   });
 
   xit('can send a reason to the promise for storage', function(){
     var myReason = { error: 'bad request' };
     deferral.reject( myReason );
-    expect( promise.value ).toBe( myReason );
+    expect( promise._value ).toBe( myReason );
   });
 
   // Hint: use the pending status.
@@ -143,7 +143,7 @@ describe('Rejecting through a deferral', function(){
     var reason2 = { error: 'timed out' };
     deferral.reject( reason1 );
     deferral.reject( reason2 );
-    expect( promise.value ).toBe( reason1 );
+    expect( promise._value ).toBe( reason1 );
   });
 
   xit('works even with falsey values', function(){
@@ -151,7 +151,7 @@ describe('Rejecting through a deferral', function(){
     var reason2 = 'oops!';
     deferral.reject( reason1 );
     deferral.reject( reason2 );
-    expect( promise.value ).not.toBe( reason2 );
+    expect( promise._value ).not.toBe( reason2 );
   });
 
 });
@@ -170,15 +170,15 @@ describe('Settled promises never change state:', function(){
   xit('reject does not overwrite resolve', function(){
     deferral.resolve( 'Dumbledore' );
     deferral.reject( 404 );
-    expect( promise.state ).toBe( 'resolved' );
-    expect( promise.value ).toBe( 'Dumbledore' );
+    expect( promise._state ).toBe( 'resolved' );
+    expect( promise._value ).toBe( 'Dumbledore' );
   });
 
   xit('resolve does not overwrite reject', function(){
     deferral.reject( 404 );
     deferral.resolve( 'Dumbledore' );
-    expect( promise.state ).toBe( 'rejected' );
-    expect( promise.value ).toBe( 404 );
+    expect( promise._state ).toBe( 'rejected' );
+    expect( promise._value ).toBe( 404 );
   });
 
 });

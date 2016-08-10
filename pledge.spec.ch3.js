@@ -145,7 +145,7 @@ describe('Another promise', function(){
     // Optional but recommended garbage collection
     xit('discards handlers that are no longer needed', function(){
       thingDeferral.resolve({ animal: 'chipmunk' });
-      expect( promiseForThing.handlerGroups ).toEqual( [] );
+      expect( promiseForThing._handlerGroups ).toEqual( [] );
     });
 
   });

@@ -39,19 +39,19 @@ describe('For a given promiseA (pA)', function(){
 
   xit('.then adds a new deferral to its handler group', function(){
     promiseA.then();
-    expect( promiseA.handlerGroups[0].downstream instanceof Deferral ).toBe( true );
+    expect( promiseA._handlerGroups[0].downstream instanceof Deferral ).toBe( true );
     // each handler group has its own downstream
     promiseA.then();
-    expect( promiseA.handlerGroups[1].downstream instanceof Deferral ).toBe( true );
-    expect( promiseA.handlerGroups[1].downstream )
-      .not.toBe( promiseA.handlerGroups[0].downstream );
+    expect( promiseA._handlerGroups[1].downstream instanceof Deferral ).toBe( true );
+    expect( promiseA._handlerGroups[1].downstream )
+      .not.toBe( promiseA._handlerGroups[0].downstream );
   });
 
   // Passing this may break your .catch from chapter 3. If that happens,
   // you will have to go back and fix .catch, taking this spec into account.
   xit('.then returns the promise from that deferral', function(){
     var promiseB = promiseA.then();
-    expect( promiseB ).toBe( promiseA.handlerGroups[0].downstream.$promise );
+    expect( promiseB ).toBe( promiseA._handlerGroups[0].downstream.$promise );
   });
 
   describe('that returns promiseB (pB) via .then:', function(){
@@ -61,8 +61,8 @@ describe('For a given promiseA (pA)', function(){
       var promiseB = promiseA.then();
       deferralA.resolve( 9001 );
       // do not set state manually; 'resolve' should be called somewhere!
-      expect( promiseB.state ).toBe( 'resolved' );
-      expect( promiseB.value ).toBe( 9001 );
+      expect( promiseB._state ).toBe( 'resolved' );
+      expect( promiseB._value ).toBe( 9001 );
     });
 
     // Rejection bubbles down to the first available error handler.
@@ -70,16 +70,16 @@ describe('For a given promiseA (pA)', function(){
       var promiseB = promiseA.then();
       deferralA.reject( 'darn' );
       // do not set state manually; 'reject' should be called somewhere!
-      expect( promiseB.state ).toBe( 'rejected' );
-      expect( promiseB.value ).toBe( 'darn' );
+      expect( promiseB._state ).toBe( 'rejected' );
+      expect( promiseB._value ).toBe( 'darn' );
     });
 
     // This is for normal (synchronous / non-promise) return values
     xit("if pA's success handler returns a value x, pB is resolved with x", function(){
       var promiseB = promiseA.then( thisReturnsHi );
       deferralA.resolve( 'an ordinary value' );
-      expect( promiseB.state ).toBe( 'resolved' );
-      expect( promiseB.value ).toBe( 'hi' );
+      expect( promiseB._state ).toBe( 'resolved' );
+      expect( promiseB._value ).toBe( 'hi' );
     });
 
     // This is for normal (synchronous / non-promise) return values
@@ -93,8 +93,8 @@ describe('For a given promiseA (pA)', function(){
       fails somehow (which we already addressed in a previous test). */
       var promiseB = promiseA.catch( thisReturnsHi );
       deferralA.reject();
-      expect( promiseB.state ).toBe( 'resolved' );
-      expect( promiseB.value ).toBe( 'hi' );
+      expect( promiseB._state ).toBe( 'resolved' );
+      expect( promiseB._value ).toBe( 'hi' );
     });
 
     // Exceptions cause the returned promise to be rejected with the error.
@@ -102,15 +102,15 @@ describe('For a given promiseA (pA)', function(){
     xit("if pA's success handler throws an error `e`, pB is rejected with `e`", function(){
       var promiseB = promiseA.then( thisThrowsErr );
       deferralA.resolve();
-      expect( promiseB.state ).toBe( 'rejected' );
-      expect( promiseB.value ).toBe( 'err' );
+      expect( promiseB._state ).toBe( 'rejected' );
+      expect( promiseB._value ).toBe( 'err' );
     });
 
     xit("if pA's error handler throws an error `e`, pB is rejected with `e`", function(){
       var promiseB = promiseA.catch( thisThrowsErr );
       deferralA.reject();
-      expect( promiseB.state ).toBe( 'rejected' );
-      expect( promiseB.value ).toBe( 'err' );
+      expect( promiseB._state ).toBe( 'rejected' );
+      expect( promiseB._value ).toBe( 'err' );
     });
 
     /* What if promiseA returns a promiseZ? You could handle pZ like a
@@ -125,8 +125,8 @@ describe('For a given promiseA (pA)', function(){
       });
       deferralA.resolve();
       deferralZ.resolve( 'testing' );
-      expect( promiseB.value ).toBe( 'testing' );
-      expect( promiseB.state ).toBe( 'resolved' );
+      expect( promiseB._state ).toBe( 'resolved' );
+      expect( promiseB._value ).toBe( 'testing' );
     });
 
     xit("if pA's error handler returns promiseZ which fulfills, pB mimics pZ", function(){
@@ -137,8 +137,8 @@ describe('For a given promiseA (pA)', function(){
       });
       deferralA.reject();
       deferralZ.resolve( 'testing' );
-      expect( promiseB.value ).toBe( 'testing' );
-      expect( promiseB.state ).toBe( 'resolved' );
+      expect( promiseB._state ).toBe( 'resolved' );
+      expect( promiseB._value ).toBe( 'testing' );
     });
 
     xit("if pA's success handler returns promiseZ which rejects, pB mimics pZ", function(){
@@ -149,8 +149,8 @@ describe('For a given promiseA (pA)', function(){
       });
       deferralA.resolve();
       deferralZ.reject( 'testing' );
-      expect( promiseB.value ).toBe( 'testing' );
-      expect( promiseB.state ).toBe( 'rejected' );
+      expect( promiseB._state ).toBe( 'rejected' );
+      expect( promiseB._value ).toBe( 'testing' );
     });
 
     xit("if pA's error handler returns promiseZ which rejects, pB mimics pZ", function(){
@@ -161,8 +161,8 @@ describe('For a given promiseA (pA)', function(){
       });
       deferralA.reject();
       deferralZ.reject( 'testing' );
-      expect( promiseB.value ).toBe( 'testing' );
-      expect( promiseB.state ).toBe( 'rejected' );
+      expect( promiseB._state ).toBe( 'rejected' );
+      expect( promiseB._value ).toBe( 'testing' );
     });
 
     // To really test assimilation properly would require many more specs.

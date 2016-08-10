@@ -40,14 +40,14 @@ describe("A promise's .then method", function(){
 
   xit('adds update handlers to the promise', function(){
     promise.then( null, null, updateCb );
-    expect( promise.updateCbs[0] ).toBe( updateCb );
+    expect( promise._updateCbs[0] ).toBe( updateCb );
   });
 
   xit('can be called multiple times to add more handlers', function(){
     promise.then( null, null, updateCb );
-    expect( promise.updateCbs[0] ).toBe( updateCb );
+    expect( promise._updateCbs[0] ).toBe( updateCb );
     promise.then( null, null, u2 );
-    expect( promise.updateCbs[1] ).toBe( u2 );
+    expect( promise._updateCbs[1] ).toBe( u2 );
   });
 
   xit("won't bother to attach an update callback if the handler is not a function", function() {
@@ -56,7 +56,7 @@ describe("A promise's .then method", function(){
     promise.then( null, null, false );
     promise.then( null, null, [function() {}] );
     promise.then( null, null, 12345 );
-    expect( promise.updateCbs ).toEqual( [] );
+    expect( promise._updateCbs ).toEqual( [] );
   });
 
 });
