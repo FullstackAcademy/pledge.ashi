@@ -1,0 +1,28 @@
+{
+  "name": "pledge",
+  "version": "1.0.0",
+  "description": "Implement a promise library from scratch",
+  "main": "src/pledge.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "testem"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FullstackAcademy/pledge.git"
+  },
+  "keywords": [
+    "promises"
+  ],
+  "author": "Gabriel Lebec <glebec@gmail.com> (https://github.com/glebec)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FullstackAcademy/pledge/issues"
+  },
+  "homepage": "https://github.com/FullstackAcademy/pledge#readme",
+  "devDependencies": {
+    "testem": "^1.10.3"
+  }
+}
