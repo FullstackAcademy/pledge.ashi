@@ -171,14 +171,22 @@ describe("A promise's .catch(errorFn) method", function(){
   });
 
   /* This spec will probably already pass at this point, because
-  by default all functions return undefined. However, as you start
+  by default all functions return `undefined`. However, as you start
   Ch. 4, this may fail. If that happens, you will have to return here
-  and fix .catch — this time, taking the Ch. 4 specs into account. */
+  and fix `.catch` — this time, taking the Ch. 4 specs into account. */
   xit('returns the same kind of thing that .then would', function(){
-    var return1 = promise.catch( myFunc );
-    var return2 = promise.then( null, myFunc );
-    expect( return1 ).toEqual( return2 );
+    var catchReturn = promise.catch( myFunc );
+    var thenReturn = promise.then( null, myFunc );
+    // should be very similar (but are not necessarily ===):
+    [catchReturn, thenReturn].forEach(sanitize);
+    expect( catchReturn ).toEqual( thenReturn );
   });
+
+  // Stops Jasmine's `toEqual` from tripping over different constructors.
+  // Not always necessary, but some solutions don't work with normal `toEqual`.
+  function sanitize (val) {
+    if (val && /object|function/.test(typeof val)) delete val.constructor;
+  }
 
 });
 
