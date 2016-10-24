@@ -10,14 +10,7 @@ One way to understand a thing is to build it yourself. This repo contains a [Jas
 
 You'll need [Node.js](http://nodejs.org) and its package manager `npm` installed. If you already have the [Testem](https://github.com/airportyh/testem) spec runner installed globally, you probably do not need to `npm install`. Doing so however will install Testem locally.
 
-Clone this repo to your local machine and `cd` into it:
-
-```shell
-git clone https://github.com/glebec/make-promise.git
-cd make-promise
-```
-
-To execute the spec, simply run `npm test` in that directory and open the link displayed in your terminal. You will see all the upcoming tests as "pending" (yellow). Start writing your own code in the `pledge.js` file. When you pass a test (green), change the next pending test from `xit` to `it` and save. This spec is iterative and opinionated; it is recommended that you do the tests in order and not `xit` out any previous specs. For debugging, you can "focus" Jasmine specs/suites with `fit`/`fdescribe`.
+To execute the spec, simply run `npm test` in the repo directory and open the link displayed in your terminal. You will see all the upcoming tests as "pending" (yellow). Start writing your own code in the `pledge.js` file. When you pass a test (green), change the next pending test from `xit` to `it` and save. This spec is iterative and opinionated; it is recommended that you do the tests in order and not `xit` out any previous specs. For debugging, you can "focus" Jasmine specs/suites with `fit`/`fdescribe`.
 
 ## Associated learning materials
 
