@@ -1,4 +1,4 @@
-describe('Chapter 5: Notification Handlers', function(){});
+describe('Chapter 5: Static Methods `.resolve` and `.all`', function(){});
 /*=======================================================
 
 
@@ -12,113 +12,64 @@ describe('Chapter 5: Notification Handlers', function(){});
                          "Y8888P
 
 
-Chapter 5: Extra Credit: Deferral-Style Notifications
+Chapter 5: Extra Credit: Static Methods `.resolve` and `.all`
 ---------------------------------------------------------
-In $q and Q, promises can take a third handler function:
-an update or notification handler. In essence, this acts
-like a built-in event emitter that uses the promise as a
-kind of communication channel, usually for sending information
-about a pending promise. There is some disagreement as to
-how such a system should work or notifiers even belongs in
-promises at all. If you want to understand more, however,
-this chapter will implement a basic notification system.
+Promises on their own have very many advantages over
+callbacks, chiefly when it comes to *composability* —
+combining and orchestrating multiple asynchronous results.
+That being said, practically every promise library provides
+a couple of helper functions to make promise composition
+even easier. In this chapter you will implement two of the
+most crucial static methods, so useful they are part of the
+ES6 spec for promises (EcmaScript goes beyond P/A+).
 ========================================================*/
 
-/* global defer */
+/* global $Promise Deferral defer */
 /* eslint no-unused-vars: 0 */
 
-describe("A promise's .then method", function(){
+describe('The static method `$Promise.resolve`', function(){
 
-  var deferral, promise;
-  beforeEach(function(){
-    deferral = defer();
-    promise  = deferral.$promise;
-  });
-  function updateCb (info) { /* act on info */ }
-  function u2 (info) { /* act on info */ }
-
-  xit('adds update handlers to the promise', function(){
-    promise.then( null, null, updateCb );
-    expect( promise._updateCbs[0] ).toBe( updateCb );
+  // $Promise.resolve is *not* the same thing as a deferral's resolver.
+  it('is a function, and not one we have already written', function(){
+    expect( typeof $Promise.resolve ).toBe( 'function' );
+    expect( $Promise.resolve ).not.toBe( defer().resolve );
+    expect( $Promise.resolve ).not.toBe( Deferral.prototype.resolve );
   });
 
-  xit('can be called multiple times to add more handlers', function(){
-    promise.then( null, null, updateCb );
-    expect( promise._updateCbs[0] ).toBe( updateCb );
-    promise.then( null, null, u2 );
-    expect( promise._updateCbs[1] ).toBe( u2 );
+  // The following behavior is sometimes called "lifting" a value.
+  it('takes a plain value A and returns a promise for A', function(){
+    [42, 'hi', {}, undefined, /cool/, false].forEach(value => {
+      var promise = $Promise.resolve(value)
+      expect( promise instanceof $Promise ).toBe( true );
+      // like in Ch. 4, you shouldn't need to set state & value manually.
+      expect( promise._state ).toBe( 'resolved' );
+      expect( promise._value ).toBe( value );
+    });
   });
 
-  xit("won't bother to attach an update callback if the handler is not a function", function() {
-    promise.then( null, null, 'something' );
-    promise.then( null, null, {} );
-    promise.then( null, null, false );
-    promise.then( null, null, [function() {}] );
-    promise.then( null, null, 12345 );
-    expect( promise._updateCbs ).toEqual( [] );
+  // This gets more complex with "thenables" but we are ignoring those.
+  it('takes a promise for A and returns the same promise for A', function(){
+    var firstPromise = defer().$promise;
+    var secondPromise = $Promise.resolve(firstPromise);
+    expect( secondPromise ).toBe( firstPromise );
   });
 
-});
+  // As you can see, `$Promise.resolve` always returns a promise. This makes
+  // it great for "normalizing" values which may or may not be promises.
+  // Not sure if something is a promise? `$Promise.resolve` it.
 
-describe("A deferral's .notify method", function(){
-
-  var fn, downloadDeferral, promiseForDownload;
-  fn = {
-    setLoadingBar: function (num) { /* update the loading bar */ },
-  };
-  beforeEach(function(){
-    downloadDeferral = defer();
-    promiseForDownload = downloadDeferral.$promise;
-    spyOn( fn, 'setLoadingBar' ).and.callThrough();
-  });
-
-  xit("calls a promise's update handler attached via .then", function(){
-    promiseForDownload.then(null, null, fn.setLoadingBar);
-    expect( fn.setLoadingBar ).not.toHaveBeenCalled();
-    downloadDeferral.notify();
-    expect( fn.setLoadingBar ).toHaveBeenCalled();
-  });
-
-  xit('calls an update handler with some information', function(){
-    promiseForDownload.then(null, null, fn.setLoadingBar);
-    expect( fn.setLoadingBar ).not.toHaveBeenCalled();
-    downloadDeferral.notify( 17 );
-    expect( fn.setLoadingBar ).toHaveBeenCalledWith( 17 );
-  });
-
-  xit("never affects the promise's value", function(){
-    promiseForDownload.then( fn.setLoadingBar );
-    downloadDeferral.notify( 50 );
-    expect( promiseForDownload.value ).toBe( undefined );
-  });
-
-  xit('calls all attached update handlers once per attachment', function(){
-    promiseForDownload.then(null, null, fn.setLoadingBar);
-    promiseForDownload.then(null, null, fn.setLoadingBar);
-    expect( fn.setLoadingBar ).not.toHaveBeenCalled();
-    downloadDeferral.notify();
-    expect( fn.setLoadingBar.calls.count() ).toBe( 2 );
-  });
-
-  xit('only works while the promise is pending', function(){
-    promiseForDownload.then(null, null, fn.setLoadingBar);
-    downloadDeferral.notify( 50 );
-    expect( fn.setLoadingBar ).toHaveBeenCalledWith( 50 );
-    downloadDeferral.resolve( 'now I am resolved' );
-    downloadDeferral.notify( 75 );
-    expect( fn.setLoadingBar ).not.toHaveBeenCalledWith( 75 );
-    expect( fn.setLoadingBar.calls.count() ).toBe( 1 );
-  });
-
-  xit('can be called multiple times before resolution/rejection', function(){
-    promiseForDownload.then(null, null, fn.setLoadingBar);
-    downloadDeferral.notify( 12 );
-    expect( fn.setLoadingBar.calls.count() ).toBe( 1 );
-    downloadDeferral.notify( 38 );
-    expect( fn.setLoadingBar.calls.count() ).toBe( 2 );
-    downloadDeferral.reject( 'corrupted data' );
-    downloadDeferral.notify( 54 );
-    expect( fn.setLoadingBar.calls.count() ).toBe( 2 );
-  });
+  // This is a demo; it will work if the above works. Understand why.
+  it('demonstrates why "resolved" and "fulfilled" are not synonyms', function(){
+    var deferral = defer();
+    deferral.reject();
+    var rejectedPromise = deferral.$promise;
+    // And now for the reveal:
+    var result = $Promise.resolve(rejectedPromise); // RESOLVING...
+    expect( result._state ).toBe( 'rejected' ); // ...but REJECTED!
+    // We "resolved" but still ended up with a rejected promise. So "resolve"
+    // really means ATTEMPT fulfillment. That works with normal values, or
+    // promises which are already fulfilled; but we cannot lie and claim an
+    // already-rejected promise is now magically fulfilled.
+  })
 
 });
