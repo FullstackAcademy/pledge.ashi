@@ -15,7 +15,7 @@ describe('Chapter 5: Static Methods `.resolve` and `.all`', function(){});
 Chapter 5: Extra Credit: Static Methods `.resolve` and `.all`
 ---------------------------------------------------------
 Promises on their own have very many advantages over
-callbacks, chiefly when it comes to *composability* —
+callbacks, chiefly when dealing with *composability* —
 combining and orchestrating multiple asynchronous results.
 That being said, practically every promise library provides
 a couple of helper functions to make promise composition
@@ -30,14 +30,14 @@ ES6 spec for promises (EcmaScript goes beyond P/A+).
 describe('The static method `$Promise.resolve`', function(){
 
   // $Promise.resolve is *not* the same thing as a deferral's resolver.
-  it('is a function, and not one we have already written', function(){
+  xit('is a function, and not one we have already written', function(){
     expect( typeof $Promise.resolve ).toBe( 'function' );
     expect( $Promise.resolve ).not.toBe( defer().resolve );
     expect( $Promise.resolve ).not.toBe( Deferral.prototype.resolve );
   });
 
   // The following behavior is sometimes called "lifting" a value.
-  it('takes a <plain value A> and returns a <promise for A>', function(){
+  xit('takes a <plain value A> and returns a <promise for A>', function(){
     [42, 'hi', {}, undefined, /cool/, false].forEach(value => {
       var promise = $Promise.resolve(value)
       expect( promise instanceof $Promise ).toBe( true );
@@ -48,7 +48,7 @@ describe('The static method `$Promise.resolve`', function(){
   });
 
   // This gets more complex with "thenables" but we are ignoring those.
-  it('takes a <promise for A> and returns the same <promise for A>', function(){
+  xit('takes a <promise for A> and returns the same <promise for A>', function(){
     var firstPromise = defer().$promise;
     var secondPromise = $Promise.resolve(firstPromise);
     expect( secondPromise ).toBe( firstPromise );
@@ -56,10 +56,10 @@ describe('The static method `$Promise.resolve`', function(){
 
   // As you can see, `$Promise.resolve` "normalizes" values which may or may
   // not be promises. Values become promises, and promises are already
-  // promises. Not sure if something is a promise? `$Promise.resolve` it.
+  // promises. Not sure if something is a promise? Use `$Promise.resolve`.
 
-  // This is a demo; it will work if the above works. Understand why.
-  it('demonstrates why "resolved" and "fulfilled" are not synonyms', function(){
+  // This demo should already work if the above works. Understand why.
+  xit('demonstrates why "resolved" and "fulfilled" are not synonyms', function(){
     var deferral = defer();
     deferral.reject();
     var rejectedPromise = deferral.$promise;
@@ -81,12 +81,12 @@ describe('The static method `$Promise.all`', function(){
     values = [42, 'hi', false, {}, undefined];
   });
 
-  it('is a function', function(){
+  xit('is a function', function(){
     expect( typeof $Promise.all ).toBe( 'function' );
   });
 
   // ES6 `Promise.all` accepts ANY iterable, but that is beyond Pledge's scope
-  it('takes a single array argument', function(){
+  xit('takes a single array argument', function(){
     // no errors
     $Promise.all([]);
     $Promise.all(values);
@@ -98,7 +98,7 @@ describe('The static method `$Promise.all`', function(){
   });
 
   // Doesn't seem so hard at first.
-  it('converts an <array of values> into a <promise for an array of values>', function(){
+  xit('converts an <array of values> into a <promise for an array of values>', function(){
     var promise = $Promise.all(values);
     // like in Ch. 4, you shouldn't need to set state & value manually.
     expect( promise._state ).toBe( 'fulfilled' );
@@ -106,7 +106,7 @@ describe('The static method `$Promise.all`', function(){
   });
 
   // Uh oh, getting a bit trickier.
-  it('converts an <array of promises> into a <promise for an array of values>', function(){
+  xit('converts an <array of promises> into a <promise for an array of values>', function(){
     var promises = values.map(value => $Promise.resolve(value));
     var promise = $Promise.all(promises);
     // like in Ch. 4, you shouldn't need to set state & value manually.
@@ -115,7 +115,7 @@ describe('The static method `$Promise.all`', function(){
   });
 
   // No shortcuts; each individual element may be a value or a promise for a value.
-  it('converts a <array of values and promises> into a <promise for an array of values>', function(){
+  xit('converts a <array of values and promises> into a <promise for an array of values>', function(){
     var valuesAndPromises = values.map(value => {
       return Math.random() < 0.5 ? value : $Promise.resolve(value)
     });
@@ -136,7 +136,7 @@ describe('The static method `$Promise.all`', function(){
   // Oops! You weren't synchronously checking `._value`, were you?
   // That's not how to use promises… (hint, hint).
   // You might have to siginicantly alter or augment your approach here.
-  it('converts an <array of async promises> into a <promise for an array of values>', function(done){
+  xit('converts an <array of async promises> into a <promise for an array of values>', function(done){
     var interval = 10;
     var promises = values.map((value, i) => slowPromise(value, interval * (i + 1)));
     var promise = $Promise.all(promises);
@@ -151,7 +151,7 @@ describe('The static method `$Promise.all`', function(){
 
   // Don't simply collect values in the order they finish. Somehow you have to
   // track which values go where in the final array.
-  it('converts an <array of async promises> (fulfilling in random order) into a <promise for an array of values> (ordered by index in the original array)', function(done){
+  xit('converts an <array of async promises> (fulfilling in random order) into a <promise for an array of values> (ordered by index in the original array)', function(done){
     var promises = values.map(slowPromise); // random delays
     var promise = $Promise.all(promises);
     var enoughTime = 1.2 * MAX_DELAY;
@@ -164,7 +164,7 @@ describe('The static method `$Promise.all`', function(){
   });
 
   // So close now!
-  it('rejects with <reason E> when one of the input promises rejects with <reason E>', function(done){
+  xit('rejects with <reason E> when one of the input promises rejects with <reason E>', function(done){
     // promises which will reject after a random delay
     var deferral1 = defer();
     var deferral2 = defer();
@@ -193,8 +193,8 @@ describe('The static method `$Promise.all`', function(){
   });
 
   // Whew! As we can see, `Promise.all` actually does quite a bit for us.
-  // Basically, we can give it an array containing any mix of values and
-  // randomly-timed promises. In return, it gives us a promise for all the
+  // Basically, we can give `.all` an array containing any mix of values and
+  // randomly-timed promises. In return, `.all` gives us a promise for all the
   // eventual values, maintaining the original order of the array even if
   // the promises fulfill out of order. And if any promise fails, the whole
   // fails immediately with that reason.
