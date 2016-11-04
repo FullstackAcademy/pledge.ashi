@@ -23,7 +23,7 @@ fundamentals of how promises act on eventual information.
 /* global defer */
 /* eslint no-unused-vars: 0 */
 
-describe("A promise's .then method", function(){
+describe("A promise's `.then` method", function(){
 
   var deferral, promise;
   beforeEach(function(){
@@ -72,7 +72,7 @@ describe('A promise', function(){
     addToFoo.calls.reset();
   });
 
-  describe('that is not yet resolved', function(){
+  describe('that is not yet fulfilled', function(){
 
     xit('does not call any success handlers yet', function(){
       promiseForNum.then( setFoo10 );
@@ -81,7 +81,7 @@ describe('A promise', function(){
 
   });
 
-  describe('that is already resolved', function(){
+  describe('that is already fulfilled', function(){
 
     beforeEach(function(){
       numDeferral.resolve( 25 );
@@ -89,7 +89,7 @@ describe('A promise', function(){
 
     // Recommended: add a .callHandlers method to your promise prototype.
 
-    xit('calls a success handler added by .then', function(){
+    xit('calls a success handler added by `.then`', function(){
       promiseForNum.then( setFoo10 );
       expect( setFoo10 ).toHaveBeenCalled();
     });
@@ -121,13 +121,13 @@ describe('A promise', function(){
   // But what if events occur in opposite order?
   describe('that already has a success handler', function(){
 
-    xit('calls that handler when resolved', function(){
+    xit('calls that handler when fulfilled', function(){
       promiseForNum.then( setFoo10 );
       numDeferral.resolve();
       expect( setFoo10 ).toHaveBeenCalled();
     });
 
-    xit('calls all its success handlers in order one time when resolved', function(){
+    xit('calls all its success handlers in order one time when fulfilled', function(){
       promiseForNum.then( setFoo10 );
       promiseForNum.then( addToFoo );
       numDeferral.resolve( 25 );
@@ -139,10 +139,10 @@ describe('A promise', function(){
 });
 
 /*
-We've just made something nifty. A promise's .then can
+We've just made something nifty. A promise's `.then` can
 attach behavior both before & after the promise is actually
-resolved, and we know that the actions will run when they can.
-The .then method can also be called multiple times, so you can
+fulfilled, and we know that the actions will run when they can.
+The `.then` method can also be called multiple times, so you can
 attach callbacks to run in different parts of your code, and
-they will all run once the promise is resolved.
+they will all run once the promise is fulfilled.
 */

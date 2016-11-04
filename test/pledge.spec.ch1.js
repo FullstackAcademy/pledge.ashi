@@ -36,12 +36,12 @@ not be too difficult.
 
 describe('The pledge.js library', function(){
 
-  it('has $Promise & Deferral classes', function(){
+  it('has `$Promise` & `Deferral` classes', function(){
     expect( typeof $Promise ).toBe( 'function' );
     expect( typeof Deferral ).toBe( 'function' );
   });
 
-  xit('has a defer function that returns unique deferrals', function(){
+  xit('has a `defer` function that returns unique deferrals', function(){
     var deferral1 = defer();
     var deferral2 = defer();
     expect( deferral1 instanceof Deferral ).toBe( true );
@@ -52,7 +52,7 @@ describe('The pledge.js library', function(){
 
 describe('A deferral', function(){
 
-  xit('is associated with a unique $promise', function(){
+  xit('is associated with a unique `$promise`', function(){
     var myDeferral = defer();
     var promise1 = myDeferral.$promise;
     var promise2 = defer().$promise;
@@ -83,14 +83,14 @@ describe('Resolving through a deferral', function(){
 
   // Reminder: common class methods should be defined on a prototype.
 
-  xit('changes its promise state to "resolved"', function(){
-    /* NOTE: in strict standards language, a promise that succeeds is
-    said to be "fulfilled." Since $q and Q use their .resolve method to
-    attempt fullfillment, for simplicity's sake pledge.js will treat
-    fulfillment and resolution as synonyms, though this is non-standard.
-    There are other edge cases, but let's focus on the basics. */
+  xit('(usually) changes its promise state to "fulfilled"', function(){
+    /* Why not "resolved"? This will be covered in detail in Ch. 5, but
+    for now just know that strict P/A+ terminology draws a distinction
+    between "resolution" and "fulfillment."" Normally a resolved promise
+    is also fulfilled, but in one particular case, a resolved promise is
+    actually rejected. You don't have to know why just yet! */
     deferral.resolve();
-    expect( promise._state ).toBe( 'resolved' );
+    expect( promise._state ).toBe( 'fulfilled' );
   });
 
   xit('can send data to the promise for storage', function(){
@@ -100,7 +100,7 @@ describe('Resolving through a deferral', function(){
   });
 
   // Hint: use the pending status.
-  xit('does not affect an already-resolved promise', function(){
+  xit('does not affect an already-fulfilled promise', function(){
     var data1 = { name: 'Harry Potter' };
     var data2 = { name: 'Gandalf' };
     deferral.resolve( data1 );
@@ -165,16 +165,16 @@ describe('Settled promises never change state:', function(){
   });
 
   // If you used the pending status for your "does not affect
-  // already resolved/rejected" specs, these two specs should pass already.
+  // already fulfilled/rejected" specs, these two specs should pass already.
 
-  xit('reject does not overwrite resolve', function(){
+  xit('`reject` does not overwrite fulfillment', function(){
     deferral.resolve( 'Dumbledore' );
     deferral.reject( 404 );
-    expect( promise._state ).toBe( 'resolved' );
+    expect( promise._state ).toBe( 'fulfilled' );
     expect( promise._value ).toBe( 'Dumbledore' );
   });
 
-  xit('resolve does not overwrite reject', function(){
+  xit('`resolve` does not overwrite rejection', function(){
     deferral.reject( 404 );
     deferral.resolve( 'Dumbledore' );
     expect( promise._state ).toBe( 'rejected' );
@@ -186,9 +186,9 @@ describe('Settled promises never change state:', function(){
 /*
 At this point we have some basic facts established. A promise
 starts out with pending state and no value. At some point, the
-promise can become resolved with data, or rejected with a reason.
-Once resolved or rejected, a promise is stuck in that state
-and cannot be changed again. The deferral object is a kind of
-promise parent and manager, which can resolve or reject its
+promise can become fulfilled with data, or rejected with a reason.
+Once settled (fulfilled or rejected), a promise is stuck in that
+state and cannot be changed again. The deferral object is a kind
+of promise parent and manager, which can resolve or reject its
 associated promise.
 */

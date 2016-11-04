@@ -42,7 +42,7 @@ describe('The static method `$Promise.resolve`', function(){
       var promise = $Promise.resolve(value)
       expect( promise instanceof $Promise ).toBe( true );
       // like in Ch. 4, you shouldn't need to set state & value manually.
-      expect( promise._state ).toBe( 'resolved' );
+      expect( promise._state ).toBe( 'fulfilled' );
       expect( promise._value ).toBe( value );
     });
   });
@@ -101,7 +101,7 @@ describe('The static method `$Promise.all`', function(){
   it('converts an <array of values> into a <promise for an array of values>', function(){
     var promise = $Promise.all(values);
     // like in Ch. 4, you shouldn't need to set state & value manually.
-    expect( promise._state ).toBe( 'resolved' );
+    expect( promise._state ).toBe( 'fulfilled' );
     expect( promise._value ).toEqual( values );
   });
 
@@ -110,7 +110,7 @@ describe('The static method `$Promise.all`', function(){
     var promises = values.map(value => $Promise.resolve(value));
     var promise = $Promise.all(promises);
     // like in Ch. 4, you shouldn't need to set state & value manually.
-    expect( promise._state ).toBe( 'resolved' );
+    expect( promise._state ).toBe( 'fulfilled' );
     expect( promise._value ).toEqual( values );
   });
 
@@ -121,7 +121,7 @@ describe('The static method `$Promise.all`', function(){
     });
     var promise = $Promise.all(valuesAndPromises);
     // like in Ch. 4, you shouldn't need to set state & value manually.
-    expect( promise._state ).toBe( 'resolved' );
+    expect( promise._state ).toBe( 'fulfilled' );
     expect( promise._value ).toEqual( values );
   });
 
@@ -143,7 +143,7 @@ describe('The static method `$Promise.all`', function(){
     var enoughTime = interval * (promises.length + 1);
     setTimeout(function(){
       // like in Ch. 4, you shouldn't need to set state & value manually.
-      expect( promise._state ).toBe( 'resolved' );
+      expect( promise._state ).toBe( 'fulfilled' );
       expect( promise._value ).toEqual( values );
       done();
     }, enoughTime);
@@ -157,7 +157,7 @@ describe('The static method `$Promise.all`', function(){
     var enoughTime = 1.2 * MAX_DELAY;
     setTimeout(function(){
       // like in Ch. 4, you shouldn't need to set state & value manually.
-      expect( promise._state ).toBe( 'resolved' );
+      expect( promise._state ).toBe( 'fulfilled' );
       expect( promise._value ).toEqual( values );
       done();
     }, enoughTime);

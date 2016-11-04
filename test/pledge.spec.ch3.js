@@ -14,7 +14,7 @@ describe('Chapter 3: Rejection Callback Attachment', function(){});
 
 Chapter 3: Completing the Handlers: Rejection & Catch
 ---------------------------------------------------------
-With .resolve sending and .then acting on data, we have
+With `.resolve` sending and `.then` acting on data, we have
 a major part of promises working. Rejection is similar;
 finish the "callback aggregation" of promises in this chapter.
 ========================================================*/
@@ -65,7 +65,7 @@ describe('Another promise', function(){
       expect( logOops ).not.toHaveBeenCalled();
     });
 
-    xit('calls an error handler added by .then', function(){
+    xit('calls an error handler added by `.then`', function(){
       promiseForThing.then( null, logOops );
       expect( logOops ).toHaveBeenCalled();
     });
@@ -132,7 +132,7 @@ describe('Another promise', function(){
     });
 
     // Demonstration — the next two specs should pass already
-    xit('can do stuff with resolved data', function(){
+    xit('can do stuff with fulfilled data', function(){
       thingDeferral.resolve({ animal: 'duckling' });
       expect( ui.animals[2] ).toBe( 'duckling' );
     });
@@ -153,9 +153,9 @@ describe('Another promise', function(){
 });
 
 // A quick detour while we are finishing rejections:
-// add a .catch(fn) convenience method to your promise prototype.
+// add a `.catch(fn)` convenience method to your promise prototype.
 // The internals of this method can be coded as one short line.
-describe("A promise's .catch(errorFn) method", function(){
+describe("A promise's `.catch()` method", function(){
 
   var deferral, promise;
   beforeEach(function(){
@@ -165,7 +165,7 @@ describe("A promise's .catch(errorFn) method", function(){
   });
   function myFunc (reason) { console.log(reason); }
 
-  xit('attaches errorFn as an error handler', function(){
+  xit('attaches a passed-in function as an error handler', function(){
     promise.catch( myFunc );
     expect( promise.then ).toHaveBeenCalledWith( null, myFunc );
   });
@@ -192,7 +192,7 @@ describe("A promise's .catch(errorFn) method", function(){
 
 /*
 That finishes the attachment and triggering of our handlers!
-In the next chapter, we will dive deeply into how .then
+In the next chapter, we will dive deeply into how `.then`
 chaining actually works. This behavior is what drives promises
 beyond being just portable callback sinks and transforms them
 into dynamic, versatile, powerful, manipulatable machines.

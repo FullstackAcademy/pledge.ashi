@@ -18,13 +18,13 @@ The repo contains the lecture slides and a `.then` flowchart, both in PDF format
 
 ## $q and the state of the art
 
-There are multiple proposed [CommonJS promise standards](http://wiki.commonjs.org/wiki/Promises), one leading standard [Promises/A+](https://www.promisejs.org), and upcoming native [ES6 browser implementations](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). Developers of the [MEAN stack](http://en.wikipedia.org/wiki/MEAN) should become familiar with **[AngularJS's $q service](https://docs.angularjs.org/api/ng/service/$q)**, a lightweight adaptation of [the Q library](https://github.com/kriskowal/q). [Bluebird](https://github.com/petkaantonov/bluebird) is also making waves as a highly-performant and powerful library.
+There are multiple proposed [CommonJS promise standards](http://wiki.commonjs.org/wiki/Promises), one leading standard [Promises/A+](https://www.promisejs.org), and now a compliant [ES6 implementation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). Developers of the [MEAN stack](http://en.wikipedia.org/wiki/MEAN) should become familiar with **[AngularJS's $q service](https://docs.angularjs.org/api/ng/service/$q)**, a lightweight adaptation of [the Q library](https://github.com/kriskowal/q). [Bluebird](https://github.com/petkaantonov/bluebird) is also making waves as a highly-performant and powerful library.
 
-Adding to the potential confusion, `$q` has two possible ways to generate promises: simplified ES6-style constructors, and CommonJS-style **deferreds.** We will study deferreds because they are more explicit and include a useful method, `.notify()`. If you can grasp the deferral model, the constructor model will be comparatively straightforward.
+Adding to the potential confusion, `$q` has two possible ways to generate promises: simplified ES6-style constructors, and CommonJS-style **deferreds.** We will study deferreds because they are simpler to spec out and guide students towards implementing. If you can grasp the deferral model, the constructor model will be comparatively straightforward to use.
 
 ### Warning
 
-jQuery gurus beware! While jQuery has a version of promises through `$.Deferred`, that implementation differs from current standards and is considered flawed. See [Kris Kowal’s guide.](https://github.com/kriskowal/q/wiki/Coming-from-jQuery)
+Legacy jQuery codebases beware! While jQuery 2 has a version of promises through `$.Deferred`, that implementation differed from current standards and is considered flawed. See [Kris Kowal’s guide.](https://github.com/kriskowal/q/wiki/Coming-from-jQuery) However, modern jQuery users rejoice! jQuery 3 now features P/A+ compliant promises.
 
 ## Technical note on non-compliance
 
@@ -33,7 +33,7 @@ Our `pledge.js` library is intended to be a learning exercise. Some of the [Prom
 * Handler functions should always be called in an async wrapper (e.g. `setTimeout`). This makes their behavior more deterministic as they execute after a following synchronous code line.
 * The `.then()` function should handle assimilation of promises from other libraries ("thenables"). That makes promises interoperable.
 * A promise's state and value should not be directly editable (public), only influenced or accessed through the resolver functions and `.then()`.
-* For simplicity's sake, `pledge.js` does not follow strict standards terminology. For example, it treats "resolved" and "fulfilled" as synonyms and only uses the former; similarly, it considers a pledge's `value` as meaning either its fulfilled `data` or rejected `reason`.
+* For simplicity's sake, `pledge.js` does not always follow strict standards terminology. For example, it considers a pledge's `value` as meaning either its fulfillment `data` or rejection `reason`.
 
 These and other technical details are important, but for someone just beginning to learn they distract from the core behavior and use patterns.
 

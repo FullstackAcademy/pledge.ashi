@@ -104,13 +104,13 @@ describe("A deferral's .notify method", function(){
     promiseForDownload.then(null, null, fn.setLoadingBar);
     downloadDeferral.notify( 50 );
     expect( fn.setLoadingBar ).toHaveBeenCalledWith( 50 );
-    downloadDeferral.resolve( 'now I am resolved' );
+    downloadDeferral.resolve( 'now I am fulfilled' );
     downloadDeferral.notify( 75 );
     expect( fn.setLoadingBar ).not.toHaveBeenCalledWith( 75 );
     expect( fn.setLoadingBar.calls.count() ).toBe( 1 );
   });
 
-  xit('can be called multiple times before resolution/rejection', function(){
+  xit('can be called multiple times before fulfillment/rejection', function(){
     promiseForDownload.then(null, null, fn.setLoadingBar);
     downloadDeferral.notify( 12 );
     expect( fn.setLoadingBar.calls.count() ).toBe( 1 );
