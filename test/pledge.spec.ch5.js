@@ -37,7 +37,7 @@ describe('The static method `$Promise.resolve`', function(){
   });
 
   // The following behavior is sometimes called "lifting" a value.
-  it('takes a plain value A and returns a promise for A', function(){
+  it('takes a <plain value A> and returns a <promise for A>', function(){
     [42, 'hi', {}, undefined, /cool/, false].forEach(value => {
       var promise = $Promise.resolve(value)
       expect( promise instanceof $Promise ).toBe( true );
@@ -48,15 +48,15 @@ describe('The static method `$Promise.resolve`', function(){
   });
 
   // This gets more complex with "thenables" but we are ignoring those.
-  it('takes a promise for A and returns the same promise for A', function(){
+  it('takes a <promise for A> and returns the same <promise for A>', function(){
     var firstPromise = defer().$promise;
     var secondPromise = $Promise.resolve(firstPromise);
     expect( secondPromise ).toBe( firstPromise );
   });
 
-  // As you can see, `$Promise.resolve` always returns a promise. This makes
-  // it great for "normalizing" values which may or may not be promises.
-  // Not sure if something is a promise? `$Promise.resolve` it.
+  // As you can see, `$Promise.resolve` "normalizes" values which may or may
+  // not be promises. Values become promises, and promises are already
+  // promises. Not sure if something is a promise? `$Promise.resolve` it.
 
   // This is a demo; it will work if the above works. Understand why.
   it('demonstrates why "resolved" and "fulfilled" are not synonyms', function(){
@@ -67,9 +67,136 @@ describe('The static method `$Promise.resolve`', function(){
     var result = $Promise.resolve(rejectedPromise); // RESOLVING...
     expect( result._state ).toBe( 'rejected' ); // ...but REJECTED!
     // We "resolved" but still ended up with a rejected promise. So "resolve"
-    // really means ATTEMPT fulfillment. That works with normal values, or
+    // really means *attempt* fulfillment. That works with normal values, or
     // promises which are already fulfilled; but we cannot lie and claim an
     // already-rejected promise is now magically fulfilled.
   })
+
+});
+
+describe('The static method `$Promise.all`', function(){
+
+  var values;
+  beforeEach(function(){
+    values = [42, 'hi', false, {}, undefined];
+  });
+
+  it('is a function', function(){
+    expect( typeof $Promise.all ).toBe( 'function' );
+  });
+
+  // ES6 `Promise.all` accepts ANY iterable, but that is beyond Pledge's scope
+  it('takes a single array argument', function(){
+    // no errors
+    $Promise.all([]);
+    $Promise.all(values);
+    // errors
+    values.forEach(value => {
+      var callAllWithValue = () => $Promise.all(value);
+      expect( callAllWithValue ).toThrowError( TypeError );
+    });
+  });
+
+  // Doesn't seem so hard at first.
+  it('converts an <array of values> into a <promise for an array of values>', function(){
+    var promise = $Promise.all(values);
+    // like in Ch. 4, you shouldn't need to set state & value manually.
+    expect( promise._state ).toBe( 'resolved' );
+    expect( promise._value ).toEqual( values );
+  });
+
+  // Uh oh, getting a bit trickier.
+  it('converts an <array of promises> into a <promise for an array of values>', function(){
+    var promises = values.map(value => $Promise.resolve(value));
+    var promise = $Promise.all(promises);
+    // like in Ch. 4, you shouldn't need to set state & value manually.
+    expect( promise._state ).toBe( 'resolved' );
+    expect( promise._value ).toEqual( values );
+  });
+
+  // No shortcuts; each individual element may be a value or a promise for a value.
+  it('converts a <array of values and promises> into a <promise for an array of values>', function(){
+    var valuesAndPromises = values.map(value => {
+      return Math.random() < 0.5 ? value : $Promise.resolve(value)
+    });
+    var promise = $Promise.all(valuesAndPromises);
+    // like in Ch. 4, you shouldn't need to set state & value manually.
+    expect( promise._state ).toBe( 'resolved' );
+    expect( promise._value ).toEqual( values );
+  });
+
+  // Helper. Gives a promise for a value, resolves after a set or random delay.
+  var MAX_DELAY = 100;
+  function slowPromise (value, delay) {
+    var deferral = defer();
+    setTimeout(() => deferral.resolve(value), delay || (Math.random() * MAX_DELAY));
+    return deferral.$promise;
+  }
+
+  // Oops! You weren't synchronously checking `._value`, were you?
+  // That's not how to use promises… (hint, hint).
+  // You might have to siginicantly alter or augment your approach here.
+  it('converts an <array of async promises> into a <promise for an array of values>', function(done){
+    var interval = 10;
+    var promises = values.map((value, i) => slowPromise(value, interval * (i + 1)));
+    var promise = $Promise.all(promises);
+    var enoughTime = interval * (promises.length + 1);
+    setTimeout(function(){
+      // like in Ch. 4, you shouldn't need to set state & value manually.
+      expect( promise._state ).toBe( 'resolved' );
+      expect( promise._value ).toEqual( values );
+      done();
+    }, enoughTime);
+  });
+
+  // Don't simply collect values in the order they finish. Somehow you have to
+  // track which values go where in the final array.
+  it('converts an <array of async promises> (fulfilling in random order) into a <promise for an array of values> (ordered by index in the original array)', function(done){
+    var promises = values.map(slowPromise); // random delays
+    var promise = $Promise.all(promises);
+    var enoughTime = 1.2 * MAX_DELAY;
+    setTimeout(function(){
+      // like in Ch. 4, you shouldn't need to set state & value manually.
+      expect( promise._state ).toBe( 'resolved' );
+      expect( promise._value ).toEqual( values );
+      done();
+    }, enoughTime);
+  });
+
+  // So close now!
+  it('rejects with <reason E> when one of the input promises rejects with <reason E>', function(done){
+    // promises which will reject after a random delay
+    var deferral1 = defer();
+    var deferral2 = defer();
+    var promiseThatRejects1 = deferral1.$promise;
+    var promiseThatRejects2 = deferral2.$promise;
+    var doomsday = Math.random * MAX_DELAY;
+    var postApocalypse = 1.2 * doomsday;
+    setTimeout(() => deferral1.reject('I am the first rejection'), doomsday);
+    setTimeout(() => deferral2.reject('I am too late, ignore me'), postApocalypse);
+    // a bunch of promises which fulfill in random order
+    var promises = values.map(slowPromise);
+    // slip our doomed promises in there somewhere
+    var randomIndex1 = Math.floor(Math.random() * promises.length);
+    var randomIndex2 = Math.floor(Math.random() * promises.length);
+    promises.splice(randomIndex1, 0, promiseThatRejects1);
+    promises.splice(randomIndex2, 0, promiseThatRejects2);
+    // wait for everything with $Promise.all
+    var promise = $Promise.all(promises);
+    var enoughTime = 1.2 * postApocalypse;
+    setTimeout(function(){
+      // like in Ch. 4, you shouldn't need to set state & value manually.
+      expect( promise._state ).toBe( 'rejected' );
+      expect( promise._value ).toBe( 'I am the first rejection' );
+      done();
+    }, enoughTime);
+  });
+
+  // Whew! As we can see, `Promise.all` actually does quite a bit for us.
+  // Basically, we can give it an array containing any mix of values and
+  // randomly-timed promises. In return, it gives us a promise for all the
+  // eventual values, maintaining the original order of the array even if
+  // the promises fulfill out of order. And if any promise fails, the whole
+  // fails immediately with that reason.
 
 });
