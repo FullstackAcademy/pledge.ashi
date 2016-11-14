@@ -106,8 +106,8 @@ describe('The static method `$Promise.all`', function(){
 
   // A helper function to DRY up the next bunch of specs.
   function confirmPromiseFulfillsWithVals (promise, vals, done) {
-    promise.then(function (fullfilledData) {
-      expect( fullfilledData ).toEqual( vals );
+    promise.then(function (fulfilledData) {
+      expect( fulfilledData ).toEqual( vals );
       done(); // Tells Jasmine this potentially-async spec is complete.
     })
     .catch(function (err) {
