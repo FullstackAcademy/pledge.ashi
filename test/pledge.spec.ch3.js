@@ -155,7 +155,7 @@ describe('Another promise', function(){
 // A quick detour while we are finishing rejections:
 // add a `.catch(fn)` convenience method to your promise prototype.
 // The internals of this method can be coded as one short line.
-describe("A promise's `.catch()` method", function(){
+describe("A promise's `.catch` method", function(){
 
   var deferral, promise;
   beforeEach(function(){
@@ -165,7 +165,7 @@ describe("A promise's `.catch()` method", function(){
   });
   function myFunc (reason) { console.log(reason); }
 
-  xit('attaches a passed-in function as an error handler', function(){
+  xit('attaches the passed-in function as an error handler', function(){
     promise.catch( myFunc );
     expect( promise.then ).toHaveBeenCalledWith( null, myFunc );
   });
