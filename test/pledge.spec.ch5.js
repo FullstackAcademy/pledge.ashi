@@ -41,7 +41,7 @@ describe('The static method `$Promise.resolve`', function(){
   // The following behavior is sometimes called "lifting" a value.
   xit('takes a <plain value A> and returns a <promise for A>', function(){
     [42, 'hi', {}, undefined, /cool/, false].forEach(value => {
-      var promise = $Promise.resolve(value)
+      var promise = $Promise.resolve(value);
       expect( promise instanceof $Promise ).toBe( true );
       // No need to set state & value manually; call a deferral's `resolve`.
       expect( promise._state ).toBe( 'fulfilled' );
@@ -74,7 +74,7 @@ describe('The static method `$Promise.resolve`', function(){
     // promises which are already fulfilled. However, we cannot lie and claim
     // that an already-rejected promise is now magically fulfilled, without
     // having actually handled the rejection reason.
-  })
+  });
 
 });
 
@@ -106,7 +106,7 @@ describe('The static method `$Promise.all`', function(){
     // Passing a non-array into `$Promise.all` throws a `TypeError`.
     const nonArrayValues = [42, 'hi', false, {}, undefined, /wow/];
     nonArrayValues.forEach(value => {
-      function callingAllWithValue () { return $Promise.all(value) }
+      function callingAllWithValue () { return $Promise.all(value); }
       expect( callingAllWithValue ).toThrowError( TypeError );
     });
   });
@@ -130,7 +130,7 @@ describe('The static method `$Promise.all`', function(){
   // No shortcuts; each individual element may be a value or a promise for a value.
   xit('converts an <array of values and promises> into a <promise for an array of values>', function (done) {
     var valuesAndPromises = values.map(value => {
-      return Math.random() < 0.5 ? value : $Promise.resolve(value)
+      return Math.random() < 0.5 ? value : $Promise.resolve(value);
     });
     var promise = $Promise.all(valuesAndPromises);
     // promise should fulfill with values (not mix of promises and values).
@@ -150,7 +150,7 @@ describe('The static method `$Promise.all`', function(){
   // eventual value? You might have to alter or augment your approach here.
   xit('converts an <array of async promises> into a <promise for an array of values>', function (done) {
     var promises = values.map((value, i) => {
-      return slowPromise(value, SMALL_DELAY * (i + 1))
+      return slowPromise(value, SMALL_DELAY * (i + 1));
     });
     var promise = $Promise.all(promises);
     // promise should fulfill with values... once those values actually exist.
