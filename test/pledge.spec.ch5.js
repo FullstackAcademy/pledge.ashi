@@ -24,12 +24,14 @@ static methods, so useful they are part of the ES6 spec for
 promises (EcmaScript follows, but also goes beyond, P/A+).
 ========================================================*/
 
-/* global $Promise Deferral defer */
+/* global $Promise Deferral defer customMatchers */
 /* eslint no-unused-vars: 0 */
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 250;
 
 describe('The static method `$Promise.resolve`', function(){
 
-  // $Promise.resolve is *not* the same thing as a deferral's resolver.
+  // `$Promise.resolve` is not exactly the same thing as a deferral's resolver,
+  // at least not in Pledge (depends on your promise library's implementation.)
   xit('is a function, and not one we have already written', function(){
     expect( typeof $Promise.resolve ).toBe( 'function' );
     expect( $Promise.resolve ).not.toBe( defer().resolve );
@@ -41,7 +43,7 @@ describe('The static method `$Promise.resolve`', function(){
     [42, 'hi', {}, undefined, /cool/, false].forEach(value => {
       var promise = $Promise.resolve(value)
       expect( promise instanceof $Promise ).toBe( true );
-      // like in Ch. 4, you shouldn't need to set state & value manually.
+      // No need to set state & value manually; call a deferral's `resolve`.
       expect( promise._state ).toBe( 'fulfilled' );
       expect( promise._value ).toBe( value );
     });
@@ -78,9 +80,14 @@ describe('The static method `$Promise.resolve`', function(){
 
 describe('The static method `$Promise.all`', function(){
 
+  var FAST_TIMEOUT = 0;
+  var SMALL_DELAY = 10;
+  var MAX_DELAY = 100;
+
   var values;
   beforeEach(function(){
     values = [42, 'hi', false, {}, undefined, [] ];
+    jasmine.addMatchers(customMatchers);
   });
 
   xit('is a function', function(){
@@ -90,13 +97,13 @@ describe('The static method `$Promise.all`', function(){
   // Real ES6 `Promise.all` accepts ANY iterable (https://mzl.la/1SopN1G), but
   // that is beyond Pledge's scope. Our `.all` only needs to support arrays.
   xit('takes a single array argument', function(){
-    // passing an array into `$Promise.all` causes no errors
+    // Passing an array into `$Promise.all` causes no errors.
     function callingAllWithArrays () {
       $Promise.all([]);
       $Promise.all(values);
     }
     expect( callingAllWithArrays ).not.toThrow();
-    // Passing a non-array into `$Promise.all` throws a `TypeError`
+    // Passing a non-array into `$Promise.all` throws a `TypeError`.
     const nonArrayValues = [42, 'hi', false, {}, undefined, /wow/];
     nonArrayValues.forEach(value => {
       function callingAllWithValue () { return $Promise.all(value) }
@@ -104,24 +111,12 @@ describe('The static method `$Promise.all`', function(){
     });
   });
 
-  // A helper function to DRY up the next bunch of specs.
-  function confirmPromiseFulfillsWithVals (promise, vals, done) {
-    promise.then(function (fulfilledData) {
-      expect( fulfilledData ).toEqual( vals );
-      done(); // Tells Jasmine this potentially-async spec is complete.
-    })
-    .catch(function (err) {
-      err = err || Error('Unknown rejection reason');
-      done(err); // Tells Jasmine if there was a problem (even an async one).
-    });
-  }
-
   // Doesn't seem so hard at first.
   xit('converts an <array of values> into a <promise for an array of values>', function (done) {
     var promise = $Promise.all(values);
     expect( promise instanceof $Promise ).toBe(true);
     // The promise should fulfill with the values.
-    confirmPromiseFulfillsWithVals(promise, values, done);
+    expect( promise ).toFulfillWith( values, done );
   });
 
   // Uh oh, getting a bit trickier.
@@ -129,7 +124,7 @@ describe('The static method `$Promise.all`', function(){
     var promises = values.map(value => $Promise.resolve(value));
     var promise = $Promise.all(promises);
     // The promise should fulfill with values (not promises for values).
-    confirmPromiseFulfillsWithVals(promise, values, done);
+    expect( promise ).toFulfillWith( values, done );
   });
 
   // No shortcuts; each individual element may be a value or a promise for a value.
@@ -139,11 +134,8 @@ describe('The static method `$Promise.all`', function(){
     });
     var promise = $Promise.all(valuesAndPromises);
     // promise should fulfill with values (not mix of promises and values).
-    confirmPromiseFulfillsWithVals(promise, values, done);
+    expect( promise ).toFulfillWith( values, done );
   });
-
-  var MAX_DELAY = 100;
-  var SMALL_DELAY = 10;
 
   // Helper: gives a promise for a value, resolves after a set or random delay.
   function slowPromise (value, delay) {
@@ -153,30 +145,30 @@ describe('The static method `$Promise.all`', function(){
     return deferral.$promise;
   }
 
-  // Oops! You weren't synchronously checking `._value`, were you? Tsk tsk,
-  // that's not how to use promises. Remember how to access a promise's value?
-  // You might have to sigificantly alter or augment your approach here.
+  // Oops! You weren't synchronously checking `._value`, were you? That won't
+  // work if a promise is still pending. Remember how to access a promise's
+  // eventual value? You might have to alter or augment your approach here.
   xit('converts an <array of async promises> into a <promise for an array of values>', function (done) {
     var promises = values.map((value, i) => {
       return slowPromise(value, SMALL_DELAY * (i + 1))
     });
     var promise = $Promise.all(promises);
-    // promise should fulfill with values — once those values actually exist.
-    confirmPromiseFulfillsWithVals(promise, values, done);
+    // promise should fulfill with values... once those values actually exist.
+    expect( promise ).toFulfillWith( values, done );
   });
 
-  // Don't simply collect values in the order they finish. Somehow you have to
-  // track which values go where in the final array.
+  // Don't simply push values in the order they finish. Somehow you have to
+  // keep track of which values go where in the final array.
   xit('converts an <array of async promises> (fulfilling in random order) into a <promise for an array of values> (ordered by index in the original array)', function (done) {
     var promises = values.map(slowPromise); // random delays
     var promise = $Promise.all(promises);
     // promise should fulfill with values, and in the right order too!
-    confirmPromiseFulfillsWithVals(promise, values, done);
+    expect( promise ).toFulfillWith( values, done );
   });
 
-  // So close now!
+  // So close now! What happens if one of the promises fails?
   xit('rejects with <reason E> when one of the input promises rejects with <reason E>', function (done) {
-    // promises which will reject after a random delay
+    // promise that rejects after a random delay
     var deferral = defer();
     var promiseThatRejects = deferral.$promise;
     var doomsday = Math.random * MAX_DELAY;
@@ -189,18 +181,12 @@ describe('The static method `$Promise.all`', function(){
     // wait for everything with $Promise.all
     var promise = $Promise.all(promises);
     // promise should be rejected.
-    promise.then(function () {
-      done(Error('Promise should not have fulfilled.'));
-    })
-    .catch(function (rejectionReason) {
-      expect( rejectionReason ).toBe( 'any Black Mirror episode' );
-      done();
-    });
+    expect( promise ).toRejectWith( 'any Black Mirror episode', done );
   });
 
   // This probably already passes, but let's be sure. We're strict that way.
   xit('is not affected by additional rejections', function (done) {
-    // promises which will reject after a random delay
+    // promises that reject after a random delay
     var deferral1 = defer();
     var deferral2 = defer();
     var promiseThatRejects1 = deferral1.$promise;
@@ -219,13 +205,7 @@ describe('The static method `$Promise.all`', function(){
     // wait for everything with $Promise.all
     var promise = $Promise.all(promises);
     // promise should be rejected with first rejection reason.
-    promise.then(function () {
-      done(Error('Promise should not have fulfilled.'));
-    })
-    .catch(function (rejectionReason) {
-      expect( rejectionReason ).toBe( 'I am the first rejection' );
-      done();
-    });
+    expect( promise ).toRejectWith( 'I am the first rejection', done );
   });
 
   // Whew! As we can see, `Promise.all` actually does quite a bit for us.
