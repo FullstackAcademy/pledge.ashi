@@ -1,10 +1,10 @@
 // These are some custom assertions added to make Pledge specs
 // simpler to read. Essentially they take in a user-created promise
-// object, call `then` and/or `catch` on it, and check that the result
+// object, pass it success and error handlers, and check that the result
 // matches expectations.
 //
 // Jasmine unfortunately doesn't support async matchers, so these functions
-// "cheat" by accepting the `done` function as their second parameter. They
+// "cheat" by accepting the `done` function as an extra parameter. They
 // return a flag claiming the matcher passed, but then asynchronously pass or
 // fail the entire spec using `done`.
 
