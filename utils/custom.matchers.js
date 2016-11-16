@@ -25,17 +25,16 @@ var customMatchers = {
           } else {
             done.fail('Expected promise to fulfill with ' + jasmine.pp(expectedValue) + ' but fulfilled with ' + jasmine.pp(actualValue) + '.');
           }
-        })
-        .catch(function (err) {
+        }, function (err) {
           done.fail('Expected promise to fulfill, but instead rejected with ' + jasmine.pp(err) + '.');
         });
         // necessary part of the matcher API.
         return { pass: true };
       },
       negativeCompare: function () {
-        throw Error('`toFulfillWith` does not yet support negations.')
+        throw Error('`toFulfillWith` does not yet support negations.');
       }
-    }
+    };
   },
 
   toRejectWith: function (util, customTesters) {
@@ -49,8 +48,7 @@ var customMatchers = {
         promise
         .then(function (val) {
           done.fail('Expected promise to reject, but instead fulfilled with ' + jasmine.pp(val) + '.');
-        })
-        .catch(function (actualReason) {
+        }, function (actualReason) {
           if (util.equals(actualReason, expectedReason, customTesters)) {
             done();
           } else {
@@ -61,9 +59,9 @@ var customMatchers = {
         return { pass: true };
       },
       negativeCompare: function () {
-        throw Error('`toRejectWith` does not yet support negations.')
+        throw Error('`toRejectWith` does not yet support negations.');
       }
-    }
+    };
   }
 
 };
