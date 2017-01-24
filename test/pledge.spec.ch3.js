@@ -1,4 +1,5 @@
-describe('Chapter 3: Rejection Callback Attachment', function(){});
+'use strict';
+describe('Chapter 3: Rejection Callback Attachment', function(){
 /*=======================================================
 
 
@@ -13,17 +14,19 @@ describe('Chapter 3: Rejection Callback Attachment', function(){});
 
 
 Chapter 3: Completing the Handlers: Rejection & Catch
----------------------------------------------------------
-With `.resolve` sending and `.then` acting on data, we have
-a major part of promises working. Rejection is similar;
-finish the "callback aggregation" of promises in this chapter.
-========================================================*/
+---------------------------------------------------------*/
+// With `.resolve` sending and `.then` acting on data, we have
+// a major part of promises working. Rejection is similar;
+// finish the "callback aggregation" of promises in this chapter.
+/*========================================================*/
 
-/* global defer */
+/* global $Promise */
+
+function noop () {}
 
 describe('Another promise', function(){
 
-  var thingDeferral, promiseForThing, log;
+  var promiseForThing, log;
   var logOops = jasmine.createSpy('logOops').and.callFake(function () {
     log.push({ code: 'oops' });
   });
@@ -31,8 +34,7 @@ describe('Another promise', function(){
     log.push( input );
   });
   beforeEach(function(){
-    thingDeferral = defer();
-    promiseForThing = thingDeferral.$promise;
+    promiseForThing = new $Promise(noop);
     log = [];
     logOops.calls.reset();
     logInput.calls.reset();
@@ -51,10 +53,10 @@ describe('Another promise', function(){
 
     var theReason = { code: 'timed out' };
     beforeEach(function(){
-      thingDeferral.reject( theReason );
+      promiseForThing._internalReject( theReason );
     });
 
-    // if you get "not a function" errors, think carefully about
+    // If you get "not a function" errors, think carefully about
     // what happens when you call `.then`. What is getting added
     // to the `handlerGroups`? What is your code trying to do with
     // those `handlerGroups`? There is going to have to be some
@@ -98,18 +100,21 @@ describe('Another promise', function(){
 
     xit('calls that handler when rejected', function(){
       promiseForThing.then( null, logInput );
-      thingDeferral.reject( theReason );
+      promiseForThing._internalReject( theReason );
       expect( logInput ).toHaveBeenCalledWith( theReason );
     });
 
     xit('calls all its error handlers in order one time when rejected', function(){
       promiseForThing.then( null, logInput );
       promiseForThing.then( null, logOops );
-      thingDeferral.reject( theReason );
+      promiseForThing._internalReject( theReason );
       expect( log ).toEqual( [{code: 'unauthorized'}, {code: 'oops'}] );
     });
 
   });
+
+  // This next part is a demonstration; with working resolution and rejection,
+  // promises can be used as drop-in callback replacements.
 
   describe('with both success and error handlers', function(){
 
@@ -131,20 +136,20 @@ describe('Another promise', function(){
 
     });
 
-    // Demonstration — the next two specs should pass already
     xit('can do stuff with fulfilled data', function(){
-      thingDeferral.resolve({ animal: 'duckling' });
+      promiseForThing._internalResolve({ animal: 'duckling' });
       expect( ui.animals[2] ).toBe( 'duckling' );
     });
 
     xit('can deal with rejection reasons', function(){
-      thingDeferral.reject({ message: 'unauthorized' });
+      promiseForThing._internalReject({ message: 'unauthorized' });
       expect( ui.warning ).toBe( 'unauthorized' );
     });
 
     // Optional but recommended garbage collection
+
     xit('discards handlers that are no longer needed', function(){
-      thingDeferral.resolve({ animal: 'chipmunk' });
+      promiseForThing._internalResolve({ animal: 'chipmunk' });
       expect( promiseForThing._handlerGroups ).toEqual( [] );
     });
 
@@ -152,15 +157,15 @@ describe('Another promise', function(){
 
 });
 
-// A quick detour while we are finishing rejections:
-// add a `.catch(fn)` convenience method to your promise prototype.
-// The internals of this method can be coded as one short line.
+// A quick detour while we are finishing rejections: add a `.catch` convenience
+// method to your promise prototype. The internals of this method can be coded
+// as one short line.
+
 describe("A promise's `.catch` method", function(){
 
-  var deferral, promise;
+  var promise;
   beforeEach(function(){
-     deferral = defer();
-     promise = deferral.$promise;
+     promise = new $Promise(noop);
      spyOn( promise, 'then' ).and.callThrough();
   });
   function myFunc (reason) { console.log(reason); }
@@ -170,30 +175,39 @@ describe("A promise's `.catch` method", function(){
     expect( promise.then ).toHaveBeenCalledWith( null, myFunc );
   });
 
-  /* This spec will probably already pass at this point, because
-  by default all functions return `undefined`. However, as you start
-  Ch. 4, this may fail. If that happens, you will have to return here
-  and fix `.catch` — this time, taking the Ch. 4 specs into account. */
+  // This spec will probably already pass at this point, because by default all
+  // functions return `undefined`. However, as you start Ch. 4, this may fail.
+  // If that happens, you will have to return here and fix `.catch` — this
+  // time, taking the Ch. 4 specs into account.
+
   xit('returns the same kind of thing that .then would', function(){
     var catchReturn = promise.catch( myFunc );
     var thenReturn = promise.then( null, myFunc );
-    // should be very similar (but are not necessarily ===):
     [catchReturn, thenReturn].forEach(sanitize);
+    // should be visually identical (but are not necessarily ===):
     expect( catchReturn ).toEqual( thenReturn );
   });
 
-  // Stops Jasmine's `toEqual` from tripping over different constructors.
-  // Not always necessary, but some solutions don't work with normal `toEqual`.
+  // Utility to simplify the return value somewhat. Not always necessary, but
+  // some valid solutions don't work with normal `toEqual`.
+
   function sanitize (val) {
-    if (val && /object|function/.test(typeof val)) delete val.constructor;
+    if (val && /object|function/.test(typeof val)) {
+      delete val.constructor;
+      Object.keys(val).forEach(key => {
+        if (key[0] === '_') delete val[key];
+      });
+    }
   }
 
 });
 
-/*
-That finishes the attachment and triggering of our handlers!
-In the next chapter, we will dive deeply into how `.then`
-chaining actually works. This behavior is what drives promises
-beyond being just portable callback sinks and transforms them
-into dynamic, versatile, powerful, manipulatable machines.
-*/
+// That finishes the attachment and triggering of our handlers! In the next
+// chapter, we will dive deeply into how `.then` chaining actually works.
+// This behavior is what drives promises beyond being just portable callback
+// sinks and transforms them into dynamic, versatile, powerful,
+// manipulatable machines.
+
+});
+
+// Don't forget to `git commit`!

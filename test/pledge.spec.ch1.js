@@ -1,17 +1,18 @@
-/*--------------------------------------------------------
-Promises Workshop: Build a Deferral-Style Implementation
+'use strict';
 
-We are going to write a promise library similar to $q & Q,
-called pledge.js. Our promises will be named "$promise" to avoid
-triggering existing browser code. To focus on concepts, pledge.js
-will use many public variables and not be standards-compliant.
+// Promises Workshop: Build a Constructor-Style Implementation
 
-To execute the spec, run testem in this directory. When you
-pass a test, change the next pending test from 'xit' to 'it'.
-This spec is iterative and opinionated; do the tests in order.
---------------------------------------------------------*/
+// We are going to write a promise library similar to ES6 Promise, called
+// pledge.js. Our promises will be named "$Promise" to avoid triggering
+// existing browser code. To focus on concepts, pledge.js will use many public
+// variables and not be standards-compliant.
 
-describe('Chapter 1: Structure and State', function(){});
+// To execute the spec, run `npm test` in this directory. When you pass a test,
+// change the next pending test from active. This spec is iterative and
+// opinionated; do the tests in order.
+
+
+describe('Chapter 1: Structure and State', function(){
 /*======================================================
 
 
@@ -26,169 +27,313 @@ describe('Chapter 1: Structure and State', function(){});
 
 
 Chapter 1: Basic Structure and State Changes
---------------------------------------------------------
-We are going to start with some essential pieces and begin
-to define how a deferral is related to a promise. This should
-not be too difficult.
-========================================================*/
+--------------------------------------------------------*/
+// Let's start with some essential pieces and begin to
+// define how promise construction, the `executor` argument,
+// and resolution / rejection.
+/*========================================================*/
 
-/* global Deferral $Promise defer */
+/* global $Promise */
 
-describe('The pledge.js library', function(){
+// Even before ES6 `class` syntax, devs commonly called certain functions
+// "classes". Although JS is not a class-based language, we still tend to talk
+// in terms of constructors and instances.
 
-  it('has `$Promise` & `Deferral` classes', function(){
+describe('The `$Promise` class', function(){
+
+  it('is a constructor function', function(){
     expect( typeof $Promise ).toBe( 'function' );
-    expect( typeof Deferral ).toBe( 'function' );
   });
 
-  xit('has a `defer` function that returns unique deferrals', function(){
-    var deferral1 = defer();
-    var deferral2 = defer();
-    expect( deferral1 instanceof Deferral ).toBe( true );
-    expect( deferral2 ).not.toBe( deferral1 );
+  // The only argument to a promise constructor is a function called the
+  // "executor". We will circle back to this function later.
+
+  xit('can be called with a function argument (the "executor"), returning a new promise instance', function(){
+    var executor = function () {};
+    var promise = new $Promise(executor);
+    expect( promise instanceof $Promise ).toBe( true );
+  });
+
+  // This type check mimics the strictness of real ES6 Promises.
+
+  xit('throws an error if called with no function argument', function(){
+    var nonFunctions = [null, 'bonjour', undefined, 452, {}];
+    nonFunctions.forEach(function (nonFunction) {
+      expect(callingNewPromiseWith(nonFunction)).toThrow();
+    });
+    function callingNewPromiseWith (argument) {
+      return function supposedToThrowError () {
+        var promise = new $Promise(argument); // eslint-disable-line no-unused-vars
+      };
+    }
   });
 
 });
 
-describe('A deferral', function(){
+describe('A promise instance', function(){
 
-  xit('is associated with a unique `$promise`', function(){
-    var myDeferral = defer();
-    var promise1 = myDeferral.$promise;
-    var promise2 = defer().$promise;
-    expect( promise1 instanceof $Promise ).toBe( true );
-    expect( promise2 ).not.toBe( promise1 );
+  var executor, promise;
+  beforeEach(function(){
+    executor = function () {};
+    promise = new $Promise(executor);
   });
 
-});
+  // Promises internally hold some state (changing information), which in turn
+  // affects how they behave. Promises are a kind of *state machine*.
 
-describe("A deferral's associated promise", function(){
+  // JavaScript lacks some privacy control compared to other languages. A
+  // common convention is to use a naming scheme to mark a method as "private".
+  // Beginning methods with an `._underscore` is one such signal.
 
-  xit('starts with "pending" state', function(){
-    var deferral = defer();
-    var promise = deferral.$promise;
+  xit('starts with "pending" internal state', function(){
     expect( promise._state ).toBe( 'pending' );
   });
 
+  // NOTE — promises are NOT supposed to have public resolver and rejector
+  // methods. However, hiding this implementation detail can be tricky.
+
+  xit('has an `._internalResolve` instance method', function () {
+    expect( typeof promise._internalResolve ).toBe( 'function' );
+  });
+
+  xit('has an `._internalReject` instance method', function () {
+    expect( typeof promise._internalReject ).toBe( 'function' );
+    expect( promise._internalReject ).not.toBe( promise._internalResolve );
+  });
+
+  // We have some scaffolding set up, now let's work on behavior.
+
+  describe('resolving', function(){
+
+    xit('changes the promise state to "fulfilled"', function(){
+
+      // Why not "resolved"? This will be covered in detail in Ch. 5, but
+      // for now just know that strict P/A+ terminology draws a distinction
+      // between "resolution" and "fulfillment." Normally a resolved promise
+      // is also fulfilled, but in one particular case, a resolved promise is
+      // actually rejected. You don't have to know why just yet.
+
+      promise._internalResolve();
+      expect( promise._state ).toBe( 'fulfilled' );
+    });
+
+    xit('can send data to the promise for storage', function(){
+      var someData = { name: 'Harry Potter' };
+      promise._internalResolve( someData );
+      expect( promise._value ).toBe( someData );
+    });
+
+    // Hint: use the pending status.
+
+    xit('does not affect an already-fulfilled promise', function(){
+      var data1 = { name: 'Harry Potter' };
+      var data2 = { name: 'Gandalf' };
+      promise._internalResolve( data1 );
+      promise._internalResolve( data2 );
+      expect( promise._value ).toBe( data1 );
+    });
+
+    xit('works even with falsey values', function(){
+      var data1; // undefined; could also work with null, 0, false, etc.
+      var data2 = 'oops!';
+      promise._internalResolve( data1 );
+      promise._internalResolve( data2 );
+      expect( promise._value ).not.toBe( data2 );
+    });
+
+  });
+
+  describe('rejecting', function(){
+
+    // Rejection and fulfillment are virtually identical. This should not
+    // require much more code.
+
+    xit('changes the promise state to "rejected"', function(){
+      promise._internalReject();
+      expect( promise._state ).toBe( 'rejected' );
+    });
+
+    xit('can send a reason to the promise for storage', function(){
+      var myReason = { error: 'bad request' };
+      promise._internalReject( myReason );
+      expect( promise._value ).toBe( myReason );
+    });
+
+    xit('does not affect an already-rejected promise', function(){
+      var reason1 = { error: 'bad request' };
+      var reason2 = { error: 'timed out' };
+      promise._internalReject( reason1 );
+      promise._internalReject( reason2 );
+      expect( promise._value ).toBe( reason1 );
+    });
+
+    xit('works even with falsey values', function(){
+      var reason1;
+      var reason2 = 'oops!';
+      promise._internalReject( reason1 );
+      promise._internalReject( reason2 );
+      expect( promise._value ).not.toBe( reason2 );
+    });
+
+  });
+
+  describe('settled promises never change state:', function(){
+
+    // If you used the pending status for your "does not affect already
+    // fulfilled / rejected" specs, these two specs should pass already.
+
+    xit('`reject` does not overwrite fulfillment', function(){
+      promise._internalResolve( 'Dumbledore' );
+      promise._internalReject( 404 );
+      expect( promise._state ).toBe( 'fulfilled' );
+      expect( promise._value ).toBe( 'Dumbledore' );
+    });
+
+    xit('`resolve` does not overwrite rejection', function(){
+      promise._internalReject( 404 );
+      promise._internalResolve( 'Dumbledore' );
+      expect( promise._state ).toBe( 'rejected' );
+      expect( promise._value ).toBe( 404 );
+    });
+
+  });
+
 });
 
-// We have some scaffolding set up, now let's work on behavior.
-describe('Resolving through a deferral', function(){
+// The "executor" is a way for the *creator* of a new promise to control that
+// promise's eventual fate. Remember, `._internalResolve` is how we are
+// implementing our promises, but users normally aren't supposed to have access
+// to that directly. This is mostly to prevent abuse: promises are supposed to
+// represent the result of an async action, but if *anyone* can call
+// `._internalResolve`, we can no longer trust that the promise fulfilled
+// (or not) because of the original async. Since the executor only runs when
+// the promise is constructed, access to the resolver and rejector is
+// naturally limited, making the promise more trustable.
 
-  var deferral, promise;
+describe('The executor function', function(){
+
+  var executor;
   beforeEach(function(){
-    deferral = defer();
-    promise  = deferral.$promise;
+    executor = jasmine.createSpy();
   });
 
-  // Reminder: common class methods should be defined on a prototype.
-
-  xit('changes its promise state to "fulfilled"', function(){
-    /* Why not "resolved"? This will be covered in detail in Ch. 5, but
-    for now just know that strict P/A+ terminology draws a distinction
-    between "resolution" and "fulfillment." Normally a resolved promise
-    is also fulfilled, but in one particular case, a resolved promise is
-    actually rejected. You don't have to know why just yet! */
-    deferral.resolve();
-    expect( promise._state ).toBe( 'fulfilled' );
+  xit('gets called when making a new $Promise', function(){
+    expect( executor ).not.toHaveBeenCalled();
+    var promise = new $Promise(executor); // eslint-disable-line no-unused-vars
+    expect( executor ).toHaveBeenCalled();
   });
 
-  xit('can send data to the promise for storage', function(){
-    var someData = { name: 'Harry Potter' };
-    deferral.resolve( someData );
-    expect( promise._value ).toBe( someData );
+  xit('gets called with two different functions (funception!), resolve and reject', function(){
+    var promise = new $Promise(executor); // eslint-disable-line no-unused-vars
+    var argsPassedIntoExecutor = executor.calls.argsFor(0);
+
+    expect(argsPassedIntoExecutor.length).toBe(2);
+    var resolve = argsPassedIntoExecutor[0];
+    var reject = argsPassedIntoExecutor[1];
+
+    expect( typeof resolve ).toBe( 'function' );
+    expect( typeof reject ).toBe( 'function' );
+    expect( resolve ).not.toBe( reject );
   });
 
-  // Hint: use the pending status.
-  xit('does not affect an already-fulfilled promise', function(){
-    var data1 = { name: 'Harry Potter' };
-    var data2 = { name: 'Gandalf' };
-    deferral.resolve( data1 );
-    deferral.resolve( data2 );
-    expect( promise._value ).toBe( data1 );
+  describe('resolve argument', function(){
+
+    // At this point you might try one approach, only to be stymied by errors
+    // like "cannot read X of undefined". Think carefully; you may have an
+    // issue with *context* (the `this` keyword).
+
+    xit('resolves the promise', function(){
+      var promise = new $Promise(function (resolve) {
+        resolve('WinGARdium leviOHsa.');
+      });
+      expect( promise._state ).toBe( 'fulfilled' );
+      expect( promise._value ).toBe( 'WinGARdium leviOHsa.' );
+    });
+
+    // Don't cheat! The resolver and rejector functions provided to the
+    // executor should be (or call) the internal resolve and reject methods.
+    // After all, you worked so hard to make sure `._internalResolve` and
+    // `._internalReject` work properly.
+
+    xit('is indistinguishable in behavior from `._internalResolve`', function () {
+      var resolver;
+      var promise = new $Promise(function (resolve) {
+        resolve('Use the promise machinery, Luke.');
+        resolver = resolve;
+      });
+      // Can we mess up the state?
+      resolver('No, Luke. I am your resolver.');
+      promise._internalReject("No, that's impossible!");
+      promise._internalResolve('Search your feelings, Luke.');
+      // Nope, `resolve` either is or uses `._internalResolve`.
+      expect( promise._state ).toBe( 'fulfilled' );
+      expect( promise._value ).toBe( 'Use the promise machinery, Luke.' );
+    });
+
   });
 
-  xit('works even with falsey values', function(){
-    var data1; // undefined; could also work with null, 0, false, etc.
-    var data2 = 'oops!';
-    deferral.resolve( data1 );
-    deferral.resolve( data2 );
-    expect( promise._value ).not.toBe( data2 );
+  describe('reject argument', function () {
+
+    // Yet again, resolution and rejection are basically the same.
+
+    xit('rejects the promise', function(){
+      var promise = new $Promise(function (resolve, reject) {
+        reject('Stupefy!');
+      });
+      expect( promise._state ).toBe( 'rejected' );
+      expect( promise._value ).toBe( 'Stupefy!' );
+    });
+
+    xit('is indistinguishable in behavior from `._internalReject`', function () {
+      var rejector;
+      var promise = new $Promise(function (resolve, reject) {
+        reject('You must unlearn what you have learned.');
+        rejector = reject;
+      });
+      // Can we mess up the state?
+      rejector('No! Try not. Do. Or do not. There is no try.');
+      promise._internalReject("I don't believe xit!");
+      promise._internalResolve('That is why you fail.');
+      // Nope, `reject` either is or uses `._internalResolve`.
+      expect( promise._state ).toBe( 'rejected' );
+      expect( promise._value ).toBe( 'You must unlearn what you have learned.' );
+    });
+
+  });
+
+  // This part should pass if you did the above correctly. Follow the logic:
+
+  xit('therefore allows the *creator* of a new promise to control its fate, even asynchronously!', function (done) {
+
+    var promise3 = new $Promise(function (resolve) {
+      setTimeout(function runsInTheFuture () {
+        resolve('Wow, the future is so cool.');
+      }, 50);
+    });
+
+    expect( promise3._state ).toBe( 'pending' );
+    expect( promise3._value ).toBe( undefined );
+
+    setTimeout(function runsInTheFarFuture () {
+      expect( promise3._state ).toBe( 'fulfilled' );
+      expect( promise3._value ).toBe( 'Wow, the future is so cool.' );
+      done();
+    }, 100);
   });
 
 });
 
-describe('Rejecting through a deferral', function(){
+// At this point we have some basic facts established. A promise starts out
+// with *pending* state and no value. At some point, the promise can become
+// *fulfilled* with data, or *rejected* with a reason. Once *settled*
+// (fulfilled or rejected), a promise is stuck in that state and cannot be
+// changed again.
 
-  var deferral, promise;
-  beforeEach(function(){
-    deferral = defer();
-    promise  = deferral.$promise;
-  });
-
-  xit('changes its promise state to "rejected"', function(){
-    deferral.reject();
-    expect( promise._state ).toBe( 'rejected' );
-  });
-
-  xit('can send a reason to the promise for storage', function(){
-    var myReason = { error: 'bad request' };
-    deferral.reject( myReason );
-    expect( promise._value ).toBe( myReason );
-  });
-
-  // Hint: use the pending status.
-  xit('does not affect an already-rejected promise', function(){
-    var reason1 = { error: 'bad request' };
-    var reason2 = { error: 'timed out' };
-    deferral.reject( reason1 );
-    deferral.reject( reason2 );
-    expect( promise._value ).toBe( reason1 );
-  });
-
-  xit('works even with falsey values', function(){
-    var reason1; // undefined; could also work with null, 0, false, etc.
-    var reason2 = 'oops!';
-    deferral.reject( reason1 );
-    deferral.reject( reason2 );
-    expect( promise._value ).not.toBe( reason2 );
-  });
+// The executor function enables developers to access a promise's resolver and
+// rejector, which control the promise's fate. This pattern naturally limits
+// how the resolver and rejector are accessed, encouraging developers to use
+// promises correctly.
 
 });
 
-describe('Settled promises never change state:', function(){
-
-  var deferral, promise;
-  beforeEach(function(){
-    deferral = defer();
-    promise  = deferral.$promise;
-  });
-
-  // If you used the pending status for your "does not affect
-  // already fulfilled/rejected" specs, these two specs should pass already.
-
-  xit('`reject` does not overwrite fulfillment', function(){
-    deferral.resolve( 'Dumbledore' );
-    deferral.reject( 404 );
-    expect( promise._state ).toBe( 'fulfilled' );
-    expect( promise._value ).toBe( 'Dumbledore' );
-  });
-
-  xit('`resolve` does not overwrite rejection', function(){
-    deferral.reject( 404 );
-    deferral.resolve( 'Dumbledore' );
-    expect( promise._state ).toBe( 'rejected' );
-    expect( promise._value ).toBe( 404 );
-  });
-
-});
-
-/*
-At this point we have some basic facts established. A promise
-starts out with pending state and no value. At some point, the
-promise can become fulfilled with data, or rejected with a reason.
-Once settled (fulfilled or rejected), a promise is stuck in that
-state and cannot be changed again. The deferral object is a kind
-of promise parent and manager, which can resolve or reject its
-associated promise.
-*/
+// Don't forget to `git commit`!

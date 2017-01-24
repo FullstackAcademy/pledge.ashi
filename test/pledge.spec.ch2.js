@@ -1,4 +1,5 @@
-describe('Chapter 2: Fulfillment Callback Attachment', function(){});
+'use strict';
+describe('Chapter 2: Fulfillment Callback Attachment', function(){
 /*======================================================
 
 
@@ -13,22 +14,28 @@ describe('Chapter 2: Fulfillment Callback Attachment', function(){});
 
 
 Chapter 2: Attaching and Calling Promise Event Handlers
---------------------------------------------------------
-We are beginning to see how a deferral can manipulate a
-promise. But what does a promise actually do? How can one be
-used? By completing this chapter, you will learn the
-fundamentals of how promises act on eventual information.
-========================================================*/
+--------------------------------------------------------*/
+// We are beginning to see how a promise can be manipulated
+// through the executor. But what does a promise actually do?
+// By completing this chapter, you will learn the fundamentals
+// of how promises act on eventual information.
+/*========================================================*/
 
-/* global defer */
+/* global $Promise */
 /* eslint no-unused-vars: 0 */
+
+function noop () {}
+
+// `then` is the core of promise behavior. In fact, the P/A+ spec which forms
+// the underpinnings of the ES6 spec only covers this method. The `then`
+// function is used to register *handlers* if and when the promise either
+// fulfills or rejects.
 
 describe("A promise's `.then` method", function(){
 
-  var deferral, promise;
+  var promise;
   beforeEach(function(){
-    deferral = defer();
-    promise  = deferral.$promise;
+    promise = new $Promise(noop);
   });
   function s1 (data)   { /* use data */ }
   function e1 (reason) { /* handle reason */ }
@@ -40,6 +47,9 @@ describe("A promise's `.then` method", function(){
     expect( promise._handlerGroups[0].successCb ).toBe( s1 );
     expect( promise._handlerGroups[0].errorCb   ).toBe( e1 );
   });
+
+  // This is calling `then` on the same promise multiple times, which is NOT
+  // the same as "chaining." We'll deal with promise chaining in Ch. 4.
 
   xit('can be called multiple times to add more handlers', function(){
     promise.then( s1, e1 );
@@ -58,15 +68,16 @@ describe("A promise's `.then` method", function(){
 
 });
 
-// Getting to the main functionality
+// Now comes one of the "magic" parts of promises — the way they can trigger
+// handlers both when they settle, and also after they have already settled.
+
 describe('A promise', function(){
 
-  var numDeferral, promiseForNum, foo;
+  var promiseForNum, foo;
   var setFoo10 = jasmine.createSpy('setFoo10').and.callFake(function () { foo = 10; });
   var addToFoo = jasmine.createSpy('addToFoo').and.callFake(function (num) { foo += num; });
   beforeEach(function(){
-    numDeferral = defer();
-    promiseForNum = numDeferral.$promise;
+    promiseForNum = new $Promise(noop);
     foo = 0;
     setFoo10.calls.reset();
     addToFoo.calls.reset();
@@ -84,10 +95,10 @@ describe('A promise', function(){
   describe('that is already fulfilled', function(){
 
     beforeEach(function(){
-      numDeferral.resolve( 25 );
+      promiseForNum._internalResolve( 25 );
     });
 
-    // Recommended: add a .callHandlers method to your promise prototype.
+    // Recommended: add a `._callHandlers` method to your promise prototype.
 
     xit('calls a success handler added by `.then`', function(){
       promiseForNum.then( setFoo10 );
@@ -119,18 +130,19 @@ describe('A promise', function(){
 
   // So we can run callbacks if we already have the value.
   // But what if events occur in opposite order?
+
   describe('that already has a success handler', function(){
 
     xit('calls that handler when fulfilled', function(){
       promiseForNum.then( setFoo10 );
-      numDeferral.resolve();
+      promiseForNum._internalResolve();
       expect( setFoo10 ).toHaveBeenCalled();
     });
 
     xit('calls all its success handlers in order one time when fulfilled', function(){
       promiseForNum.then( setFoo10 );
       promiseForNum.then( addToFoo );
-      numDeferral.resolve( 25 );
+      promiseForNum._internalResolve( 25 );
       expect( foo ).toBe( 35 );
     });
 
@@ -138,11 +150,13 @@ describe('A promise', function(){
 
 });
 
-/*
-We've just made something nifty. A promise's `.then` can
-attach behavior both before & after the promise is actually
-fulfilled, and we know that the actions will run when they can.
-The `.then` method can also be called multiple times, so you can
-attach callbacks to run in different parts of your code, and
-they will all run once the promise is fulfilled.
-*/
+
+// We've just made something nifty. A promise's `.then` can attach behavior
+// both before & after the promise is actually fulfilled, and we know that the
+// actions will run when they can. The `.then` method can also be called
+// multiple times, so you can attach callbacks to run in different parts of
+// your code, and they will all run once the promise is fulfilled.
+
+});
+
+// Don't forget to `git commit`!

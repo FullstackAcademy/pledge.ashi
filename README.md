@@ -1,26 +1,31 @@
 # Pledge.js
 
-### Make a promise: build a deferral-style implementation
+### Make a promise: build an ES6-style implementation
 
 **Javascript promises** are versatile tools for managing asynchronous results. They are portable and can attach handler functions to an eventual value, in multiple places. Compared to the dead end of standard async callbacks, they restore normal control flow — letting you chain results, `return` new values, and `catch` errors where most convenient.
 
-One way to understand a thing is to build it yourself. This repo contains a [Jasmine 2.0](http://jasmine.github.io/2.0/introduction.html) test spec (split into thematic chapters). Following the spec in order, we will build a deferral-style promise library similar to [AngularJS's `$q` service](https://docs.angularjs.org/api/ng/service/$q) (based on [the `Q` library](https://github.com/kriskowal/q) by Kris Kowal & Domenic Denicola), which we will call `pledge.js`. Our promises will be named `$promise` to avoid triggering browser code. To focus on concepts, `pledge.js` will use public variables and not be standards-compliant (see below).
+One way to understand a thing is to build it yourself. This repo contains a [Jasmine 2.0](http://jasmine.github.io/2.0/introduction.html) test spec (split into thematic chapters). Following the spec in order, we will build a constructor-style promise library similar to [native ECMAScript Promises](https://mzl.la/1jLTOHB), which we will call `pledge.js`. Our promises will be named `$Promise` to avoid triggering browser code. To focus on concepts, `pledge.js` will use public variables and not be standards-compliant (see below).
 
 ## Instructions
 
-You'll need [Node.js](http://nodejs.org) and its package manager `npm` installed. If you already have the [Testem](https://github.com/airportyh/testem) spec runner installed globally, you probably do not need to `npm install`. Doing so however will install Testem locally.
+You'll need [Node.js](http://nodejs.org) and its package manager `npm` installed.
 
-To execute the spec, simply run `npm test` in the repo directory and open the link displayed in your terminal. You will see all the upcoming tests as "pending" (yellow). Start writing your own code in the `pledge.js` file. When you pass a test (green), change the next pending test from `xit` to `it` and save. This spec is iterative and opinionated; it is recommended that you do the tests in order and not `xit` out any previous specs. For debugging, you can "focus" Jasmine specs/suites with `fit`/`fdescribe`.
+```sh
+npm install # automatically builds the docs and opens them
+npm test
+```
+
+You will see all the upcoming tests as "pending" (yellow). Start writing your own code in the `pledge.js` file. When you pass a test (green), change the next pending test from `xit` to `it` and save. This spec is iterative and opinionated; it is recommended that you do the tests in order and not `xit` out any previous specs. For debugging, you can "focus" Jasmine specs/suites with `fit`/`fdescribe`.
 
 ## Associated learning materials
 
 The repo contains the lecture slides and a `.then` flowchart, both in PDF format.
 
-## $q and the state of the art
+## The state of the art
 
-There are multiple proposed [CommonJS promise standards](http://wiki.commonjs.org/wiki/Promises), one leading standard [Promises/A+](https://www.promisejs.org), and now a compliant [ES6 implementation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). Developers of the [MEAN stack](http://en.wikipedia.org/wiki/MEAN) should become familiar with **[AngularJS's $q service](https://docs.angularjs.org/api/ng/service/$q)**, a lightweight adaptation of [the Q library](https://github.com/kriskowal/q). [Bluebird](https://github.com/petkaantonov/bluebird) is also making waves as a highly-performant and powerful library.
+There were once multiple proposed [CommonJS promise standards](http://wiki.commonjs.org/wiki/Promises), but one leading standard [Promises/A+](https://www.promisejs.org) and now a compliant [ES6 implementation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) won out. However, many developers use [Bluebird](https://github.com/petkaantonov/bluebird) for its faster-than-native optimizations and many clever features.
 
-Adding to the potential confusion, `$q` has two possible ways to generate promises: simplified ES6-style constructors, and CommonJS-style **deferreds.** We will study deferreds because they are simpler to spec out and guide students towards implementing. If you can grasp the deferral model, the constructor model will be comparatively straightforward to use.
+Historically, there have been two ways to generate new promises: CommonJS-style deferreds, and simplified ES6-style constructors. We will study the ES6 style, which has emerged as both the official and de facto standard.
 
 ### Warning
 
@@ -54,8 +59,8 @@ These and other technical details are important, but for someone just beginning 
 
 ### Libraries
 
-* [Kris Kowal & Domenic Denicola: Q](https://github.com/kriskowal/q) (the library Angular's $q mimics; great examples & resources)
 * [Bluebird](http://bluebirdjs.com) (the current favorite for speed & features among many JS developers)
+* [Kris Kowal & Domenic Denicola: Q](https://github.com/kriskowal/q) (the library Angular's $q mimics; great examples & resources)
 
 ### Angular and Related
 
