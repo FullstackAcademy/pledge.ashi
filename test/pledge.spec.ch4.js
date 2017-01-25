@@ -182,6 +182,49 @@ describe('For a given promiseA (pA)', function(){
     // To really test assimilation properly would require many more specs.
     // But we won't be that strict.
 
+    // All the above specs settled their promise AFTER returning the new
+    // promise. But of course you can still chain off of settled promises!
+    // Your solution might already pass this. But maybe not…
+
+    xit('still chains correctly if the promise is already settled', function (done) {
+      // utility / helper functions
+      var count = 0, shouldFulfill, shouldReject;
+      function countPassed () { if (++count === 10) done(); }
+      function thisReturnsFulfilledPromise () {
+        return new $Promise(resolve => resolve('yea'));
+      }
+      function thisReturnsRejectedPromise () {
+        return new $Promise((resolve, reject) => reject('nay'));
+      }
+      // promiseA start points
+      var fulfilledPromise = thisReturnsFulfilledPromise();
+      var rejectedPromise = thisReturnsRejectedPromise();
+      // bubbling works
+      shouldFulfill = fulfilledPromise.then();
+      expect( shouldFulfill ).toFulfillWith( 'yea', countPassed );
+      shouldReject = rejectedPromise.then();
+      expect( shouldReject ).toRejectWith( 'nay', countPassed );
+      // returning values works
+      shouldFulfill = fulfilledPromise.then( thisReturnsHi );
+      expect( shouldFulfill ).toFulfillWith( 'hi', countPassed );
+      shouldFulfill = rejectedPromise.catch( thisReturnsHi );
+      expect( shouldFulfill ).toFulfillWith( 'hi', countPassed );
+      // throwing values works
+      shouldReject = fulfilledPromise.then( thisThrowsShade );
+      expect( shouldReject ).toRejectWith( 'shade', countPassed );
+      shouldReject = rejectedPromise.catch( thisThrowsShade );
+      expect( shouldReject ).toRejectWith( 'shade', countPassed );
+      // returning promises works
+      shouldFulfill = fulfilledPromise.then( thisReturnsFulfilledPromise );
+      expect( shouldFulfill ).toFulfillWith( 'yea', countPassed );
+      shouldReject = fulfilledPromise.then( thisReturnsRejectedPromise );
+      expect( shouldReject ).toRejectWith( 'nay', countPassed );
+      shouldFulfill = rejectedPromise.catch( thisReturnsFulfilledPromise );
+      expect( shouldFulfill ).toFulfillWith( 'yea', countPassed );
+      shouldReject = rejectedPromise.catch( thisReturnsRejectedPromise );
+      expect( shouldReject ).toRejectWith( 'nay', countPassed );
+    });
+
   });
 
   // Another demonstration. This should work if the previous specs passed.
