@@ -192,12 +192,11 @@ describe("A promise's `.catch` method", function(){
   // some valid solutions don't work with normal `toEqual`.
 
   function sanitize (val) {
-    if (val && /object|function/.test(typeof val)) {
-      delete val.constructor;
-      Object.keys(val).forEach(key => {
-        if (key[0] === '_') delete val[key];
-      });
-    }
+    Object.keys(val)
+    .filter(key => typeof val[key] === 'function')
+    .forEach(key => {
+      val[key] = (val[key].name.trim() || 'anonymous') + ' function';
+    });
   }
 
 });
