@@ -35,8 +35,6 @@ Chapter 5: Extra Credit: Static Methods `.resolve` and `.all`
 /* eslint no-unused-vars: 0 */
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 250;
 
-function noop () {}
-
 // `$Promise.resolve` is not exactly the same thing as a resolver, at least
 // not in Pledge (depends on your promise library's implementation.)
 
@@ -44,7 +42,7 @@ describe('The static method `$Promise.resolve`', function(){
 
   xit('is a function, and not one we have already written', function(){
     expect( typeof $Promise.resolve ).toBe( 'function' );
-    var promise = new $Promise(noop);
+    var promise = new $Promise();
     expect( $Promise.resolve ).not.toBe( promise._internalResolve );
   });
 
@@ -61,7 +59,7 @@ describe('The static method `$Promise.resolve`', function(){
   // This would be more complex with "thenables," but we are ignoring those.
 
   xit('takes a <promise for A> and returns the same <promise for A>', function(){
-    var firstPromise = new $Promise(noop);
+    var firstPromise = new $Promise();
     var secondPromise = $Promise.resolve(firstPromise);
     expect( secondPromise ).toBe( firstPromise );
   });
@@ -193,7 +191,7 @@ describe('The static method `$Promise.all`', function(){
 
   xit('rejects with <reason E> when one of the input promises rejects with <reason E>', function (done) {
     // promise that rejects after a random delay
-    var promiseThatRejects = new $Promise(noop);
+    var promiseThatRejects = new $Promise();
     var doomsday = Math.random * MAX_DELAY;
     setTimeout(() => promiseThatRejects._internalReject('any Black Mirror episode'), doomsday);
     // a bunch of promises which fulfill in random order
@@ -211,8 +209,8 @@ describe('The static method `$Promise.all`', function(){
 
   xit('is not affected by additional rejections', function (done) {
     // promises that reject after a random delay
-    var doomed = new $Promise(noop);
-    var reallyDoomed = new $Promise(noop);
+    var doomed = new $Promise();
+    var reallyDoomed = new $Promise();
     var doomsday = Math.random * MAX_DELAY;
     var postApocalypse = doomsday + SMALL_DELAY;
     setTimeout(() => doomed._internalReject('I am the first rejection'), doomsday);

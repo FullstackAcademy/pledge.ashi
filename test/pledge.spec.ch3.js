@@ -22,8 +22,6 @@ Chapter 3: Completing the Handlers: Rejection & Catch
 
 /* global $Promise */
 
-function noop () {}
-
 describe('Another promise', function(){
 
   var promiseForThing, log;
@@ -31,10 +29,10 @@ describe('Another promise', function(){
     log.push({ code: 'oops' });
   });
   var logInput = jasmine.createSpy('logInput').and.callFake(function (input) {
-    log.push( input );
+    log.push(input);
   });
   beforeEach(function(){
-    promiseForThing = new $Promise(noop);
+    promiseForThing = new $Promise();
     log = [];
     logOops.calls.reset();
     logInput.calls.reset();
@@ -165,7 +163,7 @@ describe("A promise's `.catch` method", function(){
 
   var promise;
   beforeEach(function(){
-     promise = new $Promise(noop);
+     promise = new $Promise();
      spyOn( promise, 'then' ).and.callThrough();
   });
   function myFunc (reason) { console.log(reason); }

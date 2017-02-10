@@ -28,16 +28,14 @@ Chapter 4: Promises Can Return Values and Chain Together
 /* global $Promise customMatchers */
 /* eslint no-throw-literal: 0 */
 
-function noop () {}
-
 describe('For a given promiseA (pA)', function(){
 
-  var promiseA;
+  var promiseA, thisReturnsHi, thisThrowsShade;
   beforeEach(function(){
-    promiseA = new $Promise(noop);
+    promiseA = new $Promise();
+    thisReturnsHi = function () { return 'hi'; };
+    thisThrowsShade = function () { throw 'shade'; };
   });
-  function thisReturnsHi () { return 'hi'; }
-  function thisThrowsShade () { throw 'shade'; }
 
   // Our parent promise must maintain some kind of reference to the downstream
   // promise, in order to control chaining.
@@ -45,11 +43,11 @@ describe('For a given promiseA (pA)', function(){
   xit('`.then` adds a new promise to its handler group', function(){
     promiseA.then();
     var groups = promiseA._handlerGroups;
-    expect( groups[0].downstream instanceof $Promise ).toBe( true );
-    // each handler group has its own `downstream`
+    expect( groups[0].downstreamPromise instanceof $Promise ).toBe( true );
+    // each handler group has its own `downstreamPromise`
     promiseA.then();
-    expect( groups[1].downstream instanceof $Promise ).toBe( true );
-    expect( groups[1].downstream ).not.toBe( groups[0].downstream );
+    expect( groups[1].downstreamPromise instanceof $Promise ).toBe( true );
+    expect( groups[1].downstreamPromise ).not.toBe( groups[0].downstreamPromise );
   });
 
   // Passing this may break your `.catch` from chapter 3. If that happens,
@@ -57,7 +55,7 @@ describe('For a given promiseA (pA)', function(){
 
   xit('`.then` returns that downstream promise', function(){
     var promiseB = promiseA.then();
-    expect( promiseB ).toBe( promiseA._handlerGroups[0].downstream );
+    expect( promiseB ).toBe( promiseA._handlerGroups[0].downstreamPromise );
   });
 
   // This section is detailed in the Promises Flowchart. Refer to the PDF.
@@ -140,7 +138,7 @@ describe('For a given promiseA (pA)', function(){
     // pZ's behavior — aka assimilation. These four tests are brain-benders.
 
     xit("if pA's success handler returns promiseZ which fulfills, pB mimics pZ", function (done) {
-      var promiseZ = new $Promise(noop);
+      var promiseZ = new $Promise();
       var promiseB = promiseA.then(function(){
         return promiseZ;
       });
@@ -150,7 +148,7 @@ describe('For a given promiseA (pA)', function(){
     }, FAST_TIMEOUT);
 
     xit("if pA's error handler returns promiseZ which fulfills, pB mimics pZ", function (done) {
-      var promiseZ = new $Promise(noop);
+      var promiseZ = new $Promise();
       var promiseB = promiseA.catch(function(){
         return promiseZ;
       });
@@ -160,7 +158,7 @@ describe('For a given promiseA (pA)', function(){
     }, FAST_TIMEOUT);
 
     xit("if pA's success handler returns promiseZ which rejects, pB mimics pZ", function (done) {
-      var promiseZ = new $Promise(noop);
+      var promiseZ = new $Promise();
       var promiseB = promiseA.then(function(){
         return promiseZ;
       });
@@ -170,7 +168,7 @@ describe('For a given promiseA (pA)', function(){
     }, FAST_TIMEOUT);
 
     xit("if pA's error handler returns promiseZ which rejects, pB mimics pZ", function (done) {
-      var promiseZ = new $Promise(noop);
+      var promiseZ = new $Promise();
       var promiseB = promiseA.catch(function(){
         return promiseZ;
       });

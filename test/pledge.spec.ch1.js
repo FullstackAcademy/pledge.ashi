@@ -41,41 +41,22 @@ Chapter 1: Basic Structure and State Changes
 
 describe('The `$Promise` class', function(){
 
-  it('is a constructor function', function(){
+  it('is a function', function(){
     expect( typeof $Promise ).toBe( 'function' );
   });
 
-  // The only argument to a promise constructor is a function called the
-  // "executor". We will circle back to this function later.
-
-  xit('can be called with a function argument (the "executor"), returning a new promise instance', function(){
-    var executor = function () {};
-    var promise = new $Promise(executor);
+  xit('returns a new promise instance', function(){
+    var promise = new $Promise();
     expect( promise instanceof $Promise ).toBe( true );
-  });
-
-  // This type check mimics the strictness of real ES6 Promises.
-
-  xit('throws an error if called with no function argument', function(){
-    var nonFunctions = [null, 'bonjour', undefined, 452, {}];
-    nonFunctions.forEach(function (nonFunction) {
-      expect(callingNewPromiseWith(nonFunction)).toThrow();
-    });
-    function callingNewPromiseWith (argument) {
-      return function supposedToThrowError () {
-        var promise = new $Promise(argument); // eslint-disable-line no-unused-vars
-      };
-    }
   });
 
 });
 
 describe('A promise instance', function(){
 
-  var executor, promise;
+  var promise;
   beforeEach(function(){
-    executor = function () {};
-    promise = new $Promise(executor);
+    promise = new $Promise();
   });
 
   // Promises internally hold some state (changing information), which in turn
@@ -138,7 +119,7 @@ describe('A promise instance', function(){
       var data2 = 'oops!';
       promise._internalResolve( data1 );
       promise._internalResolve( data2 );
-      expect( promise._value ).not.toBe( data2 );
+      expect( promise._value ).toBe( data1 );
     });
 
   });
@@ -172,7 +153,7 @@ describe('A promise instance', function(){
       var reason2 = 'oops!';
       promise._internalReject( reason1 );
       promise._internalReject( reason2 );
-      expect( promise._value ).not.toBe( reason2 );
+      expect( promise._value ).toBe( reason1 );
     });
 
   });
@@ -200,15 +181,19 @@ describe('A promise instance', function(){
 
 });
 
-// The "executor" is a way for the *creator* of a new promise to control that
+// The Promise constructor takes one argument (in fact, ES6 Promises *must*
+// receive this argument, or throw an error): an "executor" function. The
+// executor will be called with two arguments: a "resolver" and "rejector".
+
+// The executor is a way for the *creator* of a new promise to control that
 // promise's eventual fate. Remember, `._internalResolve` is how we are
 // implementing our promises, but users normally aren't supposed to have access
 // to that directly. This is mostly to prevent abuse: promises are supposed to
 // represent the result of an async action, but if *anyone* can call
-// `._internalResolve`, we can no longer trust that the promise fulfilled
-// (or not) because of the original async. Since the executor only runs when
-// the promise is constructed, access to the resolver and rejector is
-// naturally limited, making the promise more trustable.
+// `._internalResolve`, we can no longer trust that the promise settled
+// because of the original async. Since the executor only runs when the
+// promise is constructed, access to the resolver and rejector is naturally
+// limited, making the promise more trustable.
 
 describe('The executor function', function(){
 

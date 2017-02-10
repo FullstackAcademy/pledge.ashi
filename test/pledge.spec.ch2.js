@@ -24,8 +24,6 @@ Chapter 2: Attaching and Calling Promise Event Handlers
 /* global $Promise */
 /* eslint no-unused-vars: 0 */
 
-function noop () {}
-
 // `then` is the core of promise behavior. In fact, the P/A+ spec which forms
 // the underpinnings of the ES6 spec only covers this method. The `then`
 // function is used to register *handlers* if and when the promise either
@@ -33,14 +31,14 @@ function noop () {}
 
 describe("A promise's `.then` method", function(){
 
-  var promise;
+  var promise, s1, e1, s2, e2;
   beforeEach(function(){
-    promise = new $Promise(noop);
+    promise = new $Promise();
+    s1 = function (data)   { /* use data */ };
+    e1 = function (reason) { /* handle reason */ };
+    s2 = function (data)   { /* use data */ };
+    e2 = function (reason) { /* handle reason */ };
   });
-  function s1 (data)   { /* use data */ }
-  function e1 (reason) { /* handle reason */ }
-  function s2 (data)   { /* use data */ }
-  function e2 (reason) { /* handle reason */ }
 
   xit('adds groups of handlers (callback functions) to the promise', function(){
     promise.then( s1, e1 );
@@ -74,10 +72,14 @@ describe("A promise's `.then` method", function(){
 describe('A promise', function(){
 
   var promiseForNum, foo;
-  var setFoo10 = jasmine.createSpy('setFoo10').and.callFake(function () { foo = 10; });
-  var addToFoo = jasmine.createSpy('addToFoo').and.callFake(function (num) { foo += num; });
+  var setFoo10 = jasmine.createSpy('setFoo10').and.callFake(function () {
+    foo = 10;
+  });
+  var addToFoo = jasmine.createSpy('addToFoo').and.callFake(function (num) {
+    foo += num;
+  });
   beforeEach(function(){
-    promiseForNum = new $Promise(noop);
+    promiseForNum = new $Promise();
     foo = 0;
     setFoo10.calls.reset();
     addToFoo.calls.reset();

@@ -9,7 +9,7 @@
   "scripts": {
     "test": "testem",
     "docs": "docco test/*.js",
-    "docs:view": "npm run docs && open docs/pledge.spec.ch1.html",
+    "docs:view": "npm run docs && opn docs/pledge.spec.ch1.html",
     "postinstall": "npm run docs:view"
   },
   "repository": {
@@ -27,6 +27,7 @@
   "homepage": "https://github.com/FullstackAcademy/pledge#readme",
   "devDependencies": {
     "docco": "^0.7.0",
+    "opn-cli": "^3.1.0",
     "testem": "^1.10.3"
   }
 }
