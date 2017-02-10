@@ -32,7 +32,7 @@ Chapter 5: Extra Credit: Static Methods `.resolve` and `.all`
 /*========================================================*/
 
 /* global $Promise customMatchers */
-/* eslint no-unused-vars: 0 */
+
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 250;
 
 // `$Promise.resolve` is not exactly the same thing as a resolver, at least
@@ -92,7 +92,6 @@ describe('The static method `$Promise.resolve`', function(){
 
 describe('The static method `$Promise.all`', function(){
 
-  var FAST_TIMEOUT = 0;
   var SMALL_DELAY = 10;
   var MAX_DELAY = 100;
 

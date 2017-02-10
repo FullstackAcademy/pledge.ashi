@@ -51,6 +51,7 @@ These and other technical details are important, but for someone just beginning 
 
 ### General
 
+* [You Don't Know JS: Async and Performance](https://github.com/getify/You-Dont-Know-JS/blob/master/async%20%26%20performance/README.md)
 * [HTML5 Rocks: Promises](http://www.html5rocks.com/en/tutorials/es6/promises/) (deep walkthrough with use patterns)
 * [Nolan Lawson: We Have a Problem with Promises](http://pouchdb.com/2015/05/18/we-have-a-problem-with-promises.html)
 * [DailyJS: Javascript Promises in Wicked Detail](http://dailyjs.com/2014/02/20/promises-in-detail/) (build an ES6-style implementation)
