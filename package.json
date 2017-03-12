@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "testem",
+    "test": "gulp",
     "docs": "docco test/*.js",
     "docs:view": "npm run docs && opn docs/pledge.spec.ch1.html",
     "postinstall": "npm run docs:view"
@@ -27,7 +27,10 @@
   "homepage": "https://github.com/FullstackAcademy/pledge#readme",
   "devDependencies": {
     "docco": "^0.7.0",
-    "opn-cli": "^3.1.0",
-    "testem": "^1.10.3"
-  }
+    "gulp": "^3.9.1",
+    "gulp-jasmine-livereload-task": "^0.11.0",
+    "jasmine-core": "^2.5.2",
+    "opn-cli": "^3.1.0"
+  },
+  "dependencies": {}
 }
