@@ -1,5 +1,6 @@
 # generated and private folders
 **.solution.js
+SpecRunner.html
 docs
 
 # installed packages (better: 'yarn' / `npm install` / `bower install`)
