@@ -5,7 +5,8 @@ Promises Workshop: build the pledge.js ES6-style promise library
 // YOUR CODE HERE:
  class $Promise {
     constructor(exec = () => {}) {
-        this._state = 'pending'
+        this._state = 'pending';
+        this._handlerGroups = [];
         exec((val) => this._internalResolve(val), (reason) => this._internalReject(reason));
     }
   
@@ -14,7 +15,7 @@ Promises Workshop: build the pledge.js ES6-style promise library
             this._state = 'fulfilled';
             this._value = data;
         }
-       
+        this._callHandlers();
     }
 
     _internalReject(reason) {
@@ -22,6 +23,26 @@ Promises Workshop: build the pledge.js ES6-style promise library
             this._state = 'rejected';
             this._value = reason;
         }
+        this._callHandlers();
+    }
+
+    _callHandlers() {
+        switch (this._state){
+            case "fulfilled":
+                while(this._handlerGroups.length) {
+                    const chelsea = this._handlerGroups.shift();
+                    chelsea.successCb && chelsea.successCb(this._value)
+                }
+        }
+    }
+
+    then(successCb, errorCb) {
+        let chelsea = { //as in handler
+            successCb: typeof successCb == 'function' ? successCb : null, 
+            errorCb : typeof errorCb == 'function' ? errorCb : null
+        };
+        this._handlerGroups.push(chelsea);
+        this._callHandlers();
     }
  }
 
