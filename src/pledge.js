@@ -11,6 +11,11 @@ Promises Workshop: build the pledge.js ES6-style promise library
     }
   
     _internalResolve(data) {
+        if (data && typeof data.then === 'function') {
+            return data
+                .then(value => this._internalResolve(value))
+                .catch(reason => this._internalReject(reason))
+        }
         if( this._state === 'pending') {
             this._state = 'fulfilled';
             this._value = data;
@@ -30,29 +35,48 @@ Promises Workshop: build the pledge.js ES6-style promise library
         switch (this._state){
             case "fulfilled":
                 while(this._handlerGroups.length) {
-                    const chelsea = this._handlerGroups.shift();
-                    chelsea.successCb && chelsea.successCb(this._value)
+                    const {successCb, downstreamPromise} = this._handlerGroups.shift();
+                    if (successCb) {
+                        try {
+                            downstreamPromise._internalResolve(successCb(this._value))
+                        } catch (reason) {
+                            downstreamPromise._internalReject(reason)
+                        }
+                    } else {
+                        downstreamPromise._internalResolve(this._value)
+                    }
                 }
                 break;
            case "rejected":
                 while(this._handlerGroups.length) {
-                    const chelsea = this._handlerGroups.shift();
-                    chelsea.errorCb && chelsea.errorCb(this._value)
+                    const {errorCb, downstreamPromise} = this._handlerGroups.shift();
+                    if (errorCb) {
+                        try {
+                            downstreamPromise._internalResolve(errorCb(this._value))
+                        } catch (reason) {
+                            downstreamPromise._internalReject(reason)
+                        }
+                    } else {
+                        downstreamPromise._internalReject(this._value)
+                    }
                 }
         }
     }
 
     then(successCb, errorCb) {
+        const downstreamPromise = new $Promise
         let chelsea = { //as in handler
             successCb: typeof successCb == 'function' ? successCb : null, 
-            errorCb : typeof errorCb == 'function' ? errorCb : null
+            errorCb : typeof errorCb == 'function' ? errorCb : null,
+            downstreamPromise,
         };
         this._handlerGroups.push(chelsea);
         this._callHandlers();
+        return downstreamPromise
     }
 
     catch(errorCb) {
-        this.then(null, errorCb)
+        return this.then(null, errorCb)
     }
  }
 
