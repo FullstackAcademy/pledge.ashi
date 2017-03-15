@@ -188,6 +188,7 @@ describe('For a given promiseA (pA)', function(){
       // utility / helper functions
       var count = 0, shouldFulfill, shouldReject;
       function countPassed () { if (++count === 10) done(); }
+      Object.assign(countPassed, done);
       function thisReturnsFulfilledPromise () {
         return new $Promise(resolve => resolve('yea'));
       }
