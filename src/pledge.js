@@ -33,6 +33,12 @@ Promises Workshop: build the pledge.js ES6-style promise library
                     const chelsea = this._handlerGroups.shift();
                     chelsea.successCb && chelsea.successCb(this._value)
                 }
+                break;
+           case "rejected":
+                while(this._handlerGroups.length) {
+                    const chelsea = this._handlerGroups.shift();
+                    chelsea.errorCb && chelsea.errorCb(this._value)
+                }
         }
     }
 
@@ -43,6 +49,10 @@ Promises Workshop: build the pledge.js ES6-style promise library
         };
         this._handlerGroups.push(chelsea);
         this._callHandlers();
+    }
+
+    catch(errorCb) {
+        this.then(null, errorCb)
     }
  }
 
