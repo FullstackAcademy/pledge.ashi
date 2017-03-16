@@ -57,7 +57,7 @@ describe("A promise's `.then` method", function(){
     expect( promise._handlerGroups[1].errorCb   ).toBe( e2 );
   });
 
-  it('attaches a falsy value in place of non-function success or error callbacks', function(){
+  xit('attaches a falsy value in place of non-function success or error callbacks', function(){
     promise.then( 'a string', {} );
     expect( promise._handlerGroups[0].successCb ).toBeFalsy();
     expect( promise._handlerGroups[0].errorCb   ).toBeFalsy();
