@@ -1,70 +1,182 @@
 'use strict';
-/*----------------------------------------------------------------
-Promises Workshop: build the pledge.js ES6-style promise library
-----------------------------------------------------------------*/
-// YOUR CODE HERE:
 
+////////// The Promise state machine. //////////
+
+/**
+ * The State of a promise. It holds a value, which may
+ * be undefined.
+ * 
+ * States are immutable. They represent the state of a Promise, frozen in time.
+ * When the Promise changes state, we'll create a new immutable State object
+ * to represent that new state
+ */
 class State {
+    /**
+     * Create a new state holding a value.
+     * 
+     * @param {*} value The value held by this state
+     */
     constructor(value) { this.value = value }
+
+    ////// State transitions //////
+    //
+    // These methods describe how we can transition from one state into
+    // another.
+    //
+    //////
+    
+    /**
+     * Returns the next state of the promise if we resolve
+     * while in this state.
+     * 
+     * The default implementation returns the current state--
+     * that is, it does nothing when resolved.
+     * 
+     * @param {*} value
+     * @returns {State} next state
+     */
     resolve(value) { return this }
+
+    /**
+     * Returns the next state of promise if we reject while in
+     * this state.
+     * 
+     * The default implementation returns the current state--
+     * that is, it does nothing when rejected.
+     * 
+     * @param {*} reason 
+     * @returns {State} next state
+     */
     reject(reason) { return this }    
+    
+    ////// Dispatchers //////
+
+    /**
+     * Drains a queue of handlers, calling callbacks as
+     * appropriate for the Promise is in this state.
+     * 
+     * This mutates the provided handlers queue.
+     * 
+     * The default implementation does nothing--that is, it
+     * dispatches no handlers.
+     * 
+     * @param {Array} handlers queue
+     */
     fire(handlers) {}
 }
 
-State.Pending = class Pending extends State {
+// Remember that classes are just constructor functions.
+// JS gives us this neat anonymous class form, which
+// gives you a reference to the constructor function.
+
+State.Pending = class extends State {
+    // If we resolve (with a value) while in the Pending state,
+    // our next state will be Fulfilled (with that value)
     resolve(value) { return Fulfilled(value) }
+
+    // If we reject (with a reason) while in the Pending state,
+    // our next state will be Rejected (with that reason)    
     reject(reason) { return Rejected(reason) }
+
+    // We're leaving fire() alone here, because it does nothing
+    // by default, and we're happy with that. While pending,
+    // we don't want to call handlers.
 }
 State.Pending.prototype.name = 'pending'
 
 State.Fulfilled = class extends State {
+    // When we're in the Fulfilled state, we call any queued
+    // success handlers.
     fire(handlers) {
-        while(handlers.length) {
+        while (handlers.length) {
             const {successCb} = handlers.shift();
             successCb(this.value)                     
         }
     }
+
+    // Fulfilled doesn't define resolve() or reject(), so it gets
+    // the default implementations from the State class.
+    //
+    // Those implementations always return `this`--that is, they
+    // never transition to a new state. That's correct: a Promise,
+    // once Fulfilled, will never transition to Rejected.
 }
 State.Fulfilled.prototype.name = 'fulfilled'
 
 State.Rejected = class extends State {
+    // When we're in the Rejected state, we call any queued
+    // error handlers.    
     fire(handlers) {
-        while(handlers.length) {
+        while (handlers.length) {
             const {errorCb} = handlers.shift();
             errorCb(this.value)            
         }        
     }
+
+    // Rejected doesn't define resolve() or reject(), so it gets
+    // the default implementations from the State class.
+    //
+    // Those implementations always return `this`--that is, they
+    // never transition to a new state. That's correct: a Promise,
+    // once Rejected, will never transition to Fulfilled.
 }
 State.Rejected.prototype.name = 'rejected'
 
+// Convenience functions for making States.
 const Pending = new State.Pending
 const Fulfilled = value => new State.Fulfilled(value)
 const Rejected = reason => new State.Rejected(reason)
 
-// chain(callback?: any->any, next: Promise) -> (any->any)?
+/**
+ * Return a function that, when called, uses `callback` to drive the $Promise `next`.
+ * 
+ * If `callback` is not a function, we return null.
+ * 
+ * Otherwise, we return a function that calls `callback`:
+ *   - If `callback` returns successfully, `next` resolves with its return value
+ *   - If `callback` throws, `next` rejects with the error as the reason
+ * 
+ * @param {Function<any, any>|null} callback 
+ * @param {$Promise} next 
+ * @returns {Function<any>|null}
+ */
 const chain = (callback, next) =>
     typeof callback === 'function'
-        ? value => {
-            try {
-                next._resolve(callback(value))
-            } catch (reason) {
-                next._reject(reason)
-            }
-        }
+        ? value => next.tryExecutor(resolve => resolve(callback(value)))
         : null
 
+/**
+ * The $Promise class runs the state machine we defined above.
+ */
  class $Promise {
+     // We're keeping these shims to keep the tests passing.
      get _state() { return this.state.name }
      get _value() { return this.state.value }
 
-    constructor(exec = () => {}) {
+    constructor(exec) {
         this.state = Pending
         this._handlerGroups = [];
         this._resolve = this._internalResolve.bind(this)
         this._reject = this._internalReject.bind(this)
-        exec(this._resolve, this._reject);
+        this.tryExecutor(exec)
     }
-  
+    
+    /**
+     * Call an executor with handles to either resolves or reject
+     * this promise.
+     * 
+     * If the executor throws, this promise rejects.
+     * 
+     * @param {*} exec 
+     */
+    tryExecutor(exec = () => {}) {
+        try {
+            exec(this._resolve, this._reject)
+        } catch (reason) {
+            this._reject(reason)
+        }
+    }
+
     _internalResolve(value) {
         if (value && typeof value.then === 'function') {
             return value.then(this._resolve, this._reject)
@@ -76,6 +188,14 @@ const chain = (callback, next) =>
         this.setState(this.state.reject(reason))        
     }
 
+    /**
+     * Transition this Promise to a new state.
+     * 
+     * This method produces side effects: it will call any handlers
+     * for the new state.
+     * 
+     * @param {State|Promise<State>} newState 
+     */
     setState(newState) {     
         this.state = newState        
         this._callHandlers()
