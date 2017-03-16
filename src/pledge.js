@@ -128,30 +128,12 @@ const Fulfilled = value => new State.Fulfilled(value)
 const Rejected = reason => new State.Rejected(reason)
 
 /**
- * Return a function that, when called, uses `callback` to drive the $Promise `next`.
- * 
- * If `callback` is not a function, we return null.
- * 
- * Otherwise, we return a function that calls `callback`:
- *   - If `callback` returns successfully, `next` resolves with its return value
- *   - If `callback` throws, `next` rejects with the error as the reason
- * 
- * @param {Function<any, any>|null} callback 
- * @param {$Promise} next 
- * @returns {Function<any>|null}
- */
-const chain = (callback, next) =>
-    typeof callback === 'function'
-        ? value => next.tryExecutor(resolve => resolve(callback(value)))
-        : null
-
-/**
  * The $Promise class runs the state machine we defined above.
  */
- class $Promise {
-     // We're keeping these shims to keep the tests passing.
-     get _state() { return this.state.name }
-     get _value() { return this.state.value }
+class $Promise {
+    // We're keeping these shims to keep the tests passing.
+    get _state() { return this.state.name }
+    get _value() { return this.state.value }
 
     constructor(exec) {
         this.state = Pending
@@ -160,7 +142,7 @@ const chain = (callback, next) =>
         this._reject = this._internalReject.bind(this)
         this.tryExecutor(exec)
     }
-    
+
     /**
      * Call an executor with handles to either resolves or reject
      * this promise.
@@ -267,20 +249,26 @@ const chain = (callback, next) =>
             $Promise.resolve([])
         )
     }
- }
+}
 
 
+/**
+ * Return a function that, when called, uses `callback` to drive the $Promise `next`.
+ * 
+ * If `callback` is not a function, we return null.
+ * 
+ * Otherwise, we return a function that calls `callback`:
+ *   - If `callback` returns successfully, `next` resolves with its return value
+ *   - If `callback` throws, `next` rejects with the error as the reason
+ * 
+ * @param {Function<any, any>|null} callback 
+ * @param {$Promise} next 
+ * @returns {Function<any>|null}
+ */
+const chain = (callback, next) =>
+    typeof callback === 'function'
+        ? value => next.tryExecutor(resolve => resolve(callback(value)))
+        : null
 
-
-/*-------------------------------------------------------
-The spec was designed to work with Test'Em, so we don't
-actually use module.exports. But here it is for reference:
-
-module.exports = $Promise;
-
-So in a Node-based project we could write things like this:
-
-var Promise = require('pledge');
-…
-var promise = new Promise(function (resolve, reject) { … });
---------------------------------------------------------*/
+// Export $Promise, but only if we have a module system.
+; ((module={}) => module.exports = $Promise)()
