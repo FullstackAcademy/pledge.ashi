@@ -115,8 +115,8 @@ describe('The static method `$Promise.all`', function(){
       $Promise.all(values);
     }
     expect( callingAllWithArrays ).not.toThrow();
-    // Passing a non-array into `$Promise.all` throws a `TypeError`.
-    const nonArrayValues = [42, 'hi', false, {}, undefined, /wow/];
+    // Passing a non-iterable into `$Promise.all` throws a `TypeError`.
+    const nonArrayValues = [42, false, {}, undefined, /wow/];
     nonArrayValues.forEach(value => {
       function callingAllWithValue () { return $Promise.all(value); }
       expect( callingAllWithValue ).toThrowError( TypeError );
@@ -211,7 +211,7 @@ describe('The static method `$Promise.all`', function(){
     var doomed = new $Promise();
     var reallyDoomed = new $Promise();
     var doomsday = 0;
-    var postApocalypse = 50;
+    var postApocalypse = 200;
     setTimeout(() => doomed._internalReject('I am the first rejection'), doomsday);
     setTimeout(() => reallyDoomed._internalReject('I am too late, ignore me'), postApocalypse);
     // a bunch of promises which fulfill in random order

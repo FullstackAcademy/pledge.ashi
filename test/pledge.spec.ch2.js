@@ -39,10 +39,11 @@ describe("A promise's `.then` method", function(){
     e2 = function (/* reason */) { /* handle reason */ };
   });
 
+
   it('adds groups of handlers (callback functions) to the promise', function(){
     promise.then( s1, e1 );
-    expect( promise._handlerGroups[0].successCb ).toBe( s1 );
-    expect( promise._handlerGroups[0].errorCb   ).toBe( e1 );
+    expect( promise._handlerGroups[0].successCb ).toEqual( jasmine.any(Function) );
+    expect( promise._handlerGroups[0].errorCb   ).toEqual( jasmine.any(Function) );
   });
 
   // This is calling `then` on the same promise multiple times, which is NOT
@@ -50,11 +51,11 @@ describe("A promise's `.then` method", function(){
 
   it('can be called multiple times to add more handlers', function(){
     promise.then( s1, e1 );
-    expect( promise._handlerGroups[0].successCb ).toBe( s1 );
-    expect( promise._handlerGroups[0].errorCb   ).toBe( e1 );
+    expect( promise._handlerGroups[0].successCb ).toEqual( jasmine.any(Function) );
+    expect( promise._handlerGroups[0].errorCb   ).toEqual( jasmine.any(Function) );
     promise.then( s2, e2 );
-    expect( promise._handlerGroups[1].successCb ).toBe( s2 );
-    expect( promise._handlerGroups[1].errorCb   ).toBe( e2 );
+    expect( promise._handlerGroups[1].successCb ).toEqual( jasmine.any(Function) );
+    expect( promise._handlerGroups[1].errorCb   ).toEqual( jasmine.any(Function) );
   });
 
   xit('attaches a falsy value in place of non-function success or error callbacks', function(){

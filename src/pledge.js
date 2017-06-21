@@ -211,8 +211,7 @@ class $Promise {
         // does to convert values and promises into promises.
         // ...or we could just create an empty promise and .then
         // off it, which seems easier:
-        return new $Promise(resolve => resolve())
-            .then(() => value)
+        return new $Promise(resolve => resolve(value))
     }
 
     // all<T>(these: Array<Promise<T>>): Promise<Array<T>>
@@ -223,31 +222,22 @@ class $Promise {
     // Returns a promise with resolves with an array, or rejects
     // with the first promise to reject.
     static all(these) {
-        if (!Array.isArray(these))
-            throw new TypeError(`$Promise.all(these): wanted an array but got ${these && these.constructor}`)
-        return these.reduce(
-            // (prev: Promise<Array<T>>, next: Promise<T>) -> Promise<Array>
-            (prev, next) =>
-                // After all previous elements have resolved...
-                prev.then(
-                    // We're inside its .then, so prev is a real array now
-                    //
-                    // prev: Array<T>
-                    prev =>
-                        // Promise.resolve will turn immediate values into
-                        // promises for us, if needed.
-                        $Promise.resolve(next)
-                            // At this point, prev and next are both immediates:
-                            //
-                            // prev: Array<T>
-                            // next: T
-                            //
-                            // The `...prev` "spreads" the elements of prev into
-                            // the array that we finally resolve with.
-                            .then(next => [...prev, next])),
-            // Kick off our reducer with the promise of an empty array
-            $Promise.resolve([])
-        )
+        if (typeof these[Symbol.iterator] !== 'function') {
+            throw new TypeError(`all(${these}): expected function`)
+        }
+        return new $Promise((resolve, reject) => {
+            let unresolved = these.length
+              , results = new Array(unresolved)
+            for (let i = 0; i < these.length; ++i) {
+                Promise.resolve(these[i]).then(
+                    value => {
+                        results[i] = value
+                        console.log(unresolved, results)
+                        if (!--unresolved) resolve(results)
+                    },
+                    reject)
+            }
+        })
     }
 }
 
