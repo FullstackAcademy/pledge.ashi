@@ -232,7 +232,6 @@ class $Promise {
                 Promise.resolve(these[i]).then(
                     value => {
                         results[i] = value
-                        console.log(unresolved, results)
                         if (!--unresolved) resolve(results)
                     },
                     reject)
