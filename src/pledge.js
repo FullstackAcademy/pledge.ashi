@@ -260,4 +260,4 @@ const chain = (callback, next) =>
         : null
 
 // Export $Promise, but only if we have a module system.
-; ((module={}) => module.exports = $Promise)()
+if (typeof module !== 'undefined') module.exports = $Promise
