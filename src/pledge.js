@@ -176,7 +176,7 @@ class $Promise {
      * This method produces side effects: it will call any handlers
      * for the new state.
      * 
-     * @param {State|Promise<State>} newState 
+     * @param {State} newState 
      */
     setState(newState) {     
         this.state = newState        
